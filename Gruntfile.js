@@ -1,22 +1,42 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        meta: {
+            all: ' angular.module("ui.atomic", ["ui.atomic.tpls" , , [<%= srcModules %>]);',
+            banner: ['/*',
+                ' * <%= pkg.name %>',
+                ' * Version: <%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>',
+                ' * License: <%= pkg.license %>',
+                ' */\n'].join('\n')
+        },
         concat: {
-            options: {
-                separator: ';'
-            },
             dist: {
                 src: 'src/*/*.js',
-                dest: '<%= pkg.tempfolder %>/js/atomic-ui.js'
+                dest: '<%= pkg.buildfolder %>/js/atomic-ui.js',
+                options: {
+                    banner: '<%= meta.banner %><%= meta.modules %>\n',
+                    separator: ';'
+                }
+            },
+            dist_tpls: {
+                src: 'template/**/*.js',
+                dest: '<%= pkg.buildfolder %>/js/atomic-ui.tpls.js',
+                options: {
+                    banner: '<%= meta.banner %><%= meta.modules %>\n',
+                    separator: ';'
+                }
             }
         },
         uglify: {
             dist: {
                 files: {
-                    '<%= pkg.buildfolder %>/js/atomic-ui.min.js': ['<%= pkg.tempfolder %>/js/atomic-ui.js']
+                    '<%= pkg.buildfolder %>/js/atomic-ui.min.js': ['<%= pkg.buildfolder %>/js/atomic-ui.js']
                 }
             }
         },
+//        html2js :{
+//
+//        }
 //        cssmin: {
 //            dist: {
 //                cleancss: true,
