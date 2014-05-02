@@ -99,11 +99,11 @@ module.exports = function (grunt) {
         clean: {
             pre_clean: {
                 force: true,
-                src: ['<%= pkg.tempfolder %>']
+                src: ['template/**/*.html.js']
             },
             post_clean: {
                 force: true,
-                src: ['<%= pkg.tempfolder %>']
+                src: ['template/**/*.html.js']
             }
         }
     });
@@ -231,6 +231,6 @@ module.exports = function (grunt) {
         grunt.task.run(['concat', 'uglify']);
     });
 
-    grunt.registerTask('dist', ['html2js:dist', 'build' ]);
+    grunt.registerTask('dist', ['html2js:dist', 'build' , 'clean:post_clean' ]);
 
 };
