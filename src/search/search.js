@@ -1,4 +1,4 @@
-angular.module("ui.makelean.search", ['ui.makelean.pager'])
+angular.module("ui.atomic.search", ['ui.atomic.pager'])
 
     /**
      * Emits a searchEvent.SEARCH_CHANGE with an object that contains the value of the input

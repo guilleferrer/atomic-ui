@@ -1,4 +1,4 @@
-angular.module("ui.makelean.testabit", ['angulartics', 'angulartics.ga', 'ui.bootstrap', 'ui.router'])
+angular.module("ui.atomic.testabit", ['angulartics', 'angulartics.ga', 'ui.bootstrap', 'ui.router'])
     .value('testabitYesText')
     .value('testabitNoText')
     .provider('testabit', function () {

@@ -1,4 +1,4 @@
-angular.module('ui.makelean.tools', [])
+angular.module('ui.atomic.tools', [])
     .factory('urlTools', function () {
 
         function toKeyValue(obj, prefix) {

@@ -1,4 +1,4 @@
-angular.module('ui.makelean.full-screen', ['ui.bootstrap', 'ui.makelean.viewport'])
+angular.module('ui.atomic.full-screen', ['ui.bootstrap', 'ui.atomic.viewport'])
     .directive('fullScreen', [ '$modal' , 'viewport', function ($modal, viewport) {
 
         return {
@@ -12,7 +12,7 @@ angular.module('ui.makelean.full-screen', ['ui.bootstrap', 'ui.makelean.viewport
 
                     modalInstance = $modal.open({
                         windowClass: 'full-modal full-screen',
-                        templateUrl: 'template/dialog/full-width.html',
+                        templateUrl: 'template/full-screen/full-screen.html',
                         scope: scope
                     });
 
@@ -31,17 +31,4 @@ angular.module('ui.makelean.full-screen', ['ui.bootstrap', 'ui.makelean.viewport
 
             }
         }
-    }])
-    .run([ '$templateCache', function ($templateCache) {
-        $templateCache.put('template/dialog/full-width.html', '<div class="modal-header">' +
-            '<button class="btn btn-link pull-right" data-ng-click="cancel()"><i class="ml-icon-30"></i></button>' +
-            '</div>' +
-            '<div class="modal-body testabit">' +
-            '<ul rn-carousel class="image">' +
-            '<li ng-repeat="image in images">' +
-            '<img ng-src="{{image}}"/>'+
-            '</li>' +
-            '</ul>' +
-            '</div>'
-        );
-    }])
+    }]);

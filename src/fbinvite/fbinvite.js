@@ -1,4 +1,4 @@
-angular.module('ui.makelean.fbinvite', [ ]).
+angular.module('ui.atomic.fbinvite', [ ]).
     factory('Facebook', function () {
         var requestNonAppFriends = function (params, callback) {
             FB.ui({

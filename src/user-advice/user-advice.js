@@ -1,4 +1,4 @@
-angular.module('ui.makelean.user_advice', ['ui.router'])
+angular.module('ui.atomic.user_advice', ['ui.router'])
     .directive('userAdvice', ['$http, $document, $rootScope', function($http, $document, $rootScope) {
 
         return {

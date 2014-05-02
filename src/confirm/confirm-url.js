@@ -1,4 +1,4 @@
-angular.module('ui.makelean.confirm-url', ['ui.bootstrap'])
+angular.module('ui.atomic.confirm-url', ['ui.bootstrap'])
 /**
  * @description
  *

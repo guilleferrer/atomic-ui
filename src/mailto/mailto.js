@@ -1,4 +1,4 @@
-angular.module('ui.makelean.mail', [ ])
+angular.module('ui.atomic.mail', [ ])
     .directive('mailto', function() {
         return {
             restrict: 'A',

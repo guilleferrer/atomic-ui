@@ -1,4 +1,4 @@
-angular.module('filters.makelean.nl2br', [])
+angular.module('ui.atomic.nl2br', [])
     .filter('nl2br', [function() {
         return function (text, is_xhtml) {
             if(text) {

@@ -1,4 +1,4 @@
-angular.module('ui.makelean.back', [ ])
+angular.module('ui.atomic.back', [ ])
 /**
  * Back directive
  */

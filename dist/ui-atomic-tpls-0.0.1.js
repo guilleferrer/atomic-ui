@@ -3,8 +3,9 @@
  * Version: 0.0.1 - 2014-05-02
  * License: ISC
  */
-
-angular.module('ui.makelean.alerts', [])
+angular.module("ui.atomic", ["ui.atomic.tpls" , "ui.atomic.alert","ui.atomic.back","ui.atomic.compile","ui.atomic.confirm","ui.atomic.fbinvite","ui.atomic.tools","ui.atomic.filter","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.nl2br","ui.atomic.search","ui.atomic.testabit","ui.atomic.truncate","ui.atomic.urlencode","ui.atomic.user-advice","ui.atomic.whatsapp"]);
+angular.module("ui.atomic.tpls", ["template/full-screen/full-screen.html","template/list/list-item.html","template/list/paged-list.html"]);
+angular.module('ui.atomic.alerts', [])
     .run([ '$rootScope', 'validationMessage', '$timeout', function ($rootScope, validationMessage, $timeout) {
 
         // Global alerts Initialization
@@ -49,7 +50,8 @@ angular.module('ui.makelean.alerts', [])
             }
         });
     }])
-;angular.module('ui.makelean.back', [ ])
+
+angular.module('ui.atomic.back', [ ])
 /**
  * Back directive
  */
@@ -60,7 +62,8 @@ angular.module('ui.makelean.alerts', [])
                 $window.history.back();
             });
         }
-    }]);;angular.module('ui.makelean.compile', [], ['$compileProvider', function($compileProvider) {
+    }]);
+angular.module('ui.atomic.compile', [], ['$compileProvider', function($compileProvider) {
   // configure new 'compile' directive by passing a directive
   // factory function. The factory function injects the '$compile'
   $compileProvider.directive('compile', [ '$compile', function($compile) {
@@ -87,7 +90,8 @@ angular.module('ui.makelean.alerts', [])
   }])
 }]);
 
-;angular.module('ui.makelean.confirm-url', ['ui.bootstrap'])
+
+angular.module('ui.atomic.confirm-url', ['ui.bootstrap'])
 /**
  * @description
  *
@@ -160,7 +164,8 @@ angular.module('ui.makelean.alerts', [])
                 return false;
             });
         }
-    }]);;angular.module('ui.makelean.fbinvite', [ ]).
+    }]);
+angular.module('ui.atomic.fbinvite', [ ]).
     factory('Facebook', function () {
         var requestNonAppFriends = function (params, callback) {
             FB.ui({
@@ -201,7 +206,115 @@ angular.module('ui.makelean.alerts', [])
         }
     }]);
 
-;angular.module('ui.makelean.filter', ['ui.makelean.tools'])
+
+angular.module('ui.atomic.tools', [])
+    .factory('urlTools', function () {
+
+        function toKeyValue(obj, prefix) {
+            var str = [];
+            for (var p in obj) {
+                var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+                str.push(typeof v == "object" ?
+                    toKeyValue(v, k) :
+                    encodeURIComponent(k) + "=" + encodeURIComponent(v));
+            }
+            return str.join("&");
+        }
+
+        /**
+         * Tries to decode the URI component without throwing an exception.
+         *
+         * @private
+         * @param str value potential URI component to check.
+         * @returns {boolean} True if `value` can be decoded
+         * with the decodeURIComponent function.
+         */
+        function tryDecodeURIComponent(value) {
+            try {
+                return decodeURIComponent(value);
+            } catch (e) {
+                // Ignore any invalid uri component
+            }
+        }
+
+
+        /**
+         * Parses an escaped url query string into key-value pairs.
+         * @returns Object.<(string|boolean)>
+         */
+        function parseKeyValue(/**string*/keyValue) {
+            var obj = {}, key_value, key;
+            angular.forEach((keyValue || "").split('&'), function (keyValue) {
+                if (keyValue) {
+                    key_value = keyValue.split('=');
+                    key = tryDecodeURIComponent(key_value[0]);
+                    if (angular.isDefined(key)) {
+                        var val = angular.isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
+                        if (!obj[key]) {
+                            obj[key] = val;
+                        } else if (isArray(obj[key])) {
+                            obj[key].push(val);
+                        } else {
+                            obj[key] = [obj[key], val];
+                        }
+                    }
+                }
+            });
+            return obj;
+        }
+
+        return {
+            'toKeyValue': toKeyValue,
+            'parseKeyValue': parseKeyValue
+        };
+    });
+
+angular.module('ui.atomic.viewport', [])
+    .factory('viewport', function () {
+
+        var viewPort = getViewPort();
+
+        function getViewPort() {
+            var viewPortContent = angular.element('meta[name="viewport"]').attr('content')
+
+            return parseViewPortContent(viewPortContent);
+        }
+
+
+        function parseViewPortContent(viewPortContent) {
+            var obj = {};
+            var viewPortContentArray = viewPortContent.replace(/ /g, '').split(',');
+            angular.forEach(viewPortContentArray, function (part) {
+                var parts = part.split('=');
+                this[parts[0]] = parts[1];
+            }, obj);
+
+            return obj;
+        }
+
+        function serializeViewPortContent(obj) {
+            var parts = [];
+            angular.forEach(obj, function (value, key) {
+                parts.push(key + '=' + value);
+            });
+
+            return parts.join(',');
+        }
+
+        function setViewPort(key, value) {
+            viewPort[key] = value;
+
+            var serializedViewPort = serializeViewPortContent(viewPort);
+            angular.element('meta[name="viewport"]').attr('content', serializedViewPort)
+        }
+
+        return {
+            'get': getViewPort,
+            'set': setViewPort
+        }
+    });
+
+angular.module('ui.atomic.filter', ['ui.atomic.tools'])
 /**
  * @description
  * The filterHelper creates an interface between the filter and the urls query
@@ -312,7 +425,8 @@ angular.module('ui.makelean.alerts', [])
             }
         }
     }]);
-;angular.module('ui.makelean.full-screen', ['ui.bootstrap', 'ui.makelean.viewport'])
+
+angular.module('ui.atomic.full-screen', ['ui.bootstrap', 'ui.atomic.viewport'])
     .directive('fullScreen', [ '$modal' , 'viewport', function ($modal, viewport) {
 
         return {
@@ -326,7 +440,7 @@ angular.module('ui.makelean.alerts', [])
 
                     modalInstance = $modal.open({
                         windowClass: 'full-modal full-screen',
-                        templateUrl: 'template/dialog/full-width.html',
+                        templateUrl: 'template/full-screen/full-screen.html',
                         scope: scope
                     });
 
@@ -345,21 +459,9 @@ angular.module('ui.makelean.alerts', [])
 
             }
         }
-    }])
-    .run([ '$templateCache', function ($templateCache) {
-        $templateCache.put('template/dialog/full-width.html', '<div class="modal-header">' +
-            '<button class="btn btn-link pull-right" data-ng-click="cancel()"><i class="ml-icon-30"></i></button>' +
-            '</div>' +
-            '<div class="modal-body testabit">' +
-            '<ul rn-carousel class="image">' +
-            '<li ng-repeat="image in images">' +
-            '<img ng-src="{{image}}"/>'+
-            '</li>' +
-            '</ul>' +
-            '</div>'
-        );
-    }])
-;/* ng-infinite-scroll - v1.0.0 - 2013-02-23 */
+    }]);
+
+/* ng-infinite-scroll - v1.0.0 - 2013-02-23 */
 var mod;
 
 mod = angular.module('infinite-scroll', []);
@@ -421,87 +523,8 @@ mod.directive('infiniteScroll', [
         };
     }
 ]);
-;angular.module('ui.makelean.lists', ['ui.makelean.pager', 'infinite-scroll', "tpl/list/paged-list.html"])
-    .directive('list', [ 'Pager', '$rootScope', function (Pager, $rootScope) {
 
-        return {
-            restrict: 'E',
-            templateUrl: 'tpl/list/paged-list.html',
-            replace: true,
-            transclude: true,
-            link: function(scope, element, attrs) {
-                scope.listClass = attrs.listClass || 'list-group';
-                scope.listCache = attrs.$attr.listNoCache ? false : true;
-                var query = scope.$eval(attrs.apiQuery) || {};
-                scope.pager = new Pager(attrs.apiUrl, query);
-
-                $rootScope.$on('searchEvent.SEARCH_CHANGE', function(event, value, params){
-                    angular.extend(query, params);
-                    scope.pager = new Pager(attrs.apiUrl, query);
-                    scope.pager.nextPage();
-                })
-            }
-        };
-    }])
-    .directive('listItem', function () {
-
-        return {
-            restrict: 'E',
-            replace: true,
-            templateUrl: function (tElement, tAttrs) {
-
-                return tAttrs.itemTplUrl || '/tpl/list/list-item.html';
-            }
-        };
-    });
-
-angular.module("tpl/list/paged-list.html", []).run(["$templateCache", function ($templateCache) {
-
-    $templateCache.put("tpl/list/paged-list.html",
-        "<div class='paged-list-container'>" +
-            "<ul data-ng-class=\"listClass\" data-infinite-scroll=\"pager.nextPage(angular.noop, listCache)\" data-infinite-scroll-distance=\"1\" data-ng-transclude></ul>" +
-            "<span id=\"spinner-mini\" data-us-spinner=\"{lines: 13, length: 0, width: 5, radius: 14, corners: 1, rotate: 0, direction: 1, color: '#000', speed: 1.7, trail: 100, shadow: false, hwaccel: false, className: 'spinner', zIndex: 2e9, top: 'auto', left: 'auto' }\"></span>" +
-        "</div>"
-    );
-}]);
-;angular.module('ui.makelean.mail', [ ])
-    .directive('mailto', function() {
-        return {
-            restrict: 'A',
-            scope: {
-                mailto:'='
-            },
-            link: function(scope, element, attrs) {
-                var mailto = attrs.mailto,
-                    mailtoSubject = attrs.mailtoSubject,
-                    mailtoContent = attrs.mailtoContent;
-
-                element.bind("click", function() {
-                    window.location = "mailto:"+mailto+"?subject="+mailtoSubject+"&body="+encodeURIComponent(mailtoContent);
-                });
-
-                scope.$watch('mailto', function(value){
-                    if(value) {
-                        mailto = value;
-                    }
-                })
-            }
-        }
-    })
-;;angular.module('filters.makelean.nl2br', [])
-    .filter('nl2br', [function() {
-        return function (text, is_xhtml) {
-            if(text) {
-                var is_xhtml = is_xhtml || true;
-                var breakTag = (is_xhtml) ? '<br />' : '<br>';
-                var text = (text + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
-                return text;
-            }
-            return '';
-        }
-    }]
-);
-;angular.module("ui.makelean.pager", [])
+angular.module("ui.atomic.pager", [])
 
     .provider('pagerCache', function() {
 
@@ -663,7 +686,81 @@ angular.module("tpl/list/paged-list.html", []).run(["$templateCache", function (
 })
         ;
 
-;angular.module("ui.makelean.search", ['ui.makelean.pager'])
+
+angular.module('ui.atomic.lists', ['ui.atomic.pager', 'infinite-scroll', "tpl/list/paged-list.html"])
+    .directive('list', [ 'Pager', '$rootScope', function (Pager, $rootScope) {
+
+        return {
+            restrict: 'E',
+            templateUrl: 'template/list/paged-list.html',
+            replace: true,
+            transclude: true,
+            link: function(scope, element, attrs) {
+                scope.listClass = attrs.listClass || 'list-group';
+                scope.listCache = attrs.$attr.listNoCache ? false : true;
+                var query = scope.$eval(attrs.apiQuery) || {};
+                scope.pager = new Pager(attrs.apiUrl, query);
+
+                $rootScope.$on('searchEvent.SEARCH_CHANGE', function(event, value, params){
+                    angular.extend(query, params);
+                    scope.pager = new Pager(attrs.apiUrl, query);
+                    scope.pager.nextPage();
+                })
+            }
+        };
+    }])
+    .directive('listItem', function () {
+
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: function (tElement, tAttrs) {
+
+                return tAttrs.itemTplUrl || '/template/list/list-item.html';
+            }
+        };
+    });
+
+angular.module('ui.atomic.mail', [ ])
+    .directive('mailto', function() {
+        return {
+            restrict: 'A',
+            scope: {
+                mailto:'='
+            },
+            link: function(scope, element, attrs) {
+                var mailto = attrs.mailto,
+                    mailtoSubject = attrs.mailtoSubject,
+                    mailtoContent = attrs.mailtoContent;
+
+                element.bind("click", function() {
+                    window.location = "mailto:"+mailto+"?subject="+mailtoSubject+"&body="+encodeURIComponent(mailtoContent);
+                });
+
+                scope.$watch('mailto', function(value){
+                    if(value) {
+                        mailto = value;
+                    }
+                })
+            }
+        }
+    })
+;
+angular.module('ui.atomic.nl2br', [])
+    .filter('nl2br', [function() {
+        return function (text, is_xhtml) {
+            if(text) {
+                var is_xhtml = is_xhtml || true;
+                var breakTag = (is_xhtml) ? '<br />' : '<br>';
+                var text = (text + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
+                return text;
+            }
+            return '';
+        }
+    }]
+);
+
+angular.module("ui.atomic.search", ['ui.atomic.pager'])
 
     /**
      * Emits a searchEvent.SEARCH_CHANGE with an object that contains the value of the input
@@ -794,7 +891,8 @@ angular.module("tpl/list/paged-list.html", []).run(["$templateCache", function (
 
 ;
 
-;(function (angular) {
+
+(function (angular) {
     'use strict';
 
     angular.module('angulartics.ga', ['angulartics'])
@@ -817,7 +915,8 @@ angular.module("tpl/list/paged-list.html", []).run(["$templateCache", function (
         }]);
 
 })(angular);
-;angular.module("ui.makelean.testabit", ['angulartics', 'angulartics.ga', 'ui.bootstrap', 'ui.router'])
+
+angular.module("ui.atomic.testabit", ['angulartics', 'angulartics.ga', 'ui.bootstrap', 'ui.router'])
     .value('testabitYesText')
     .value('testabitNoText')
     .provider('testabit', function () {
@@ -997,112 +1096,8 @@ angular.module("tpl/list/paged-list.html", []).run(["$templateCache", function (
         $scope.message = model.message;
         $scope.buttons = model.buttons;
     }])
-;;angular.module('ui.makelean.tools', [])
-    .factory('urlTools', function () {
-
-        function toKeyValue(obj, prefix) {
-            var str = [];
-            for (var p in obj) {
-                var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
-                str.push(typeof v == "object" ?
-                    toKeyValue(v, k) :
-                    encodeURIComponent(k) + "=" + encodeURIComponent(v));
-            }
-            return str.join("&");
-        }
-
-        /**
-         * Tries to decode the URI component without throwing an exception.
-         *
-         * @private
-         * @param str value potential URI component to check.
-         * @returns {boolean} True if `value` can be decoded
-         * with the decodeURIComponent function.
-         */
-        function tryDecodeURIComponent(value) {
-            try {
-                return decodeURIComponent(value);
-            } catch (e) {
-                // Ignore any invalid uri component
-            }
-        }
-
-
-        /**
-         * Parses an escaped url query string into key-value pairs.
-         * @returns Object.<(string|boolean)>
-         */
-        function parseKeyValue(/**string*/keyValue) {
-            var obj = {}, key_value, key;
-            angular.forEach((keyValue || "").split('&'), function (keyValue) {
-                if (keyValue) {
-                    key_value = keyValue.split('=');
-                    key = tryDecodeURIComponent(key_value[0]);
-                    if (angular.isDefined(key)) {
-                        var val = angular.isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
-                        if (!obj[key]) {
-                            obj[key] = val;
-                        } else if (isArray(obj[key])) {
-                            obj[key].push(val);
-                        } else {
-                            obj[key] = [obj[key], val];
-                        }
-                    }
-                }
-            });
-            return obj;
-        }
-
-        return {
-            'toKeyValue': toKeyValue,
-            'parseKeyValue': parseKeyValue
-        };
-    });
-;angular.module('ui.makelean.viewport', [])
-    .factory('viewport', function () {
-
-        var viewPort = getViewPort();
-
-        function getViewPort() {
-            var viewPortContent = angular.element('meta[name="viewport"]').attr('content')
-
-            return parseViewPortContent(viewPortContent);
-        }
-
-
-        function parseViewPortContent(viewPortContent) {
-            var obj = {};
-            var viewPortContentArray = viewPortContent.replace(/ /g, '').split(',');
-            angular.forEach(viewPortContentArray, function (part) {
-                var parts = part.split('=');
-                this[parts[0]] = parts[1];
-            }, obj);
-
-            return obj;
-        }
-
-        function serializeViewPortContent(obj) {
-            var parts = [];
-            angular.forEach(obj, function (value, key) {
-                parts.push(key + '=' + value);
-            });
-
-            return parts.join(',');
-        }
-
-        function setViewPort(key, value) {
-            viewPort[key] = value;
-
-            var serializedViewPort = serializeViewPortContent(viewPort);
-            angular.element('meta[name="viewport"]').attr('content', serializedViewPort)
-        }
-
-        return {
-            'get': getViewPort,
-            'set': setViewPort
-        }
-    });
-;angular.module('filters.makelean.truncate', [])
+;
+angular.module('ui.atomic.truncate', [])
     .filter('truncate', function () {
         return function (text, length, end) {
 
@@ -1124,13 +1119,15 @@ angular.module("tpl/list/paged-list.html", []).run(["$templateCache", function (
 
         };
     });
-;angular.module('filters.makelean.urlencode', [])
+
+angular.module('ui.atomic.urlencode', [])
     .filter('urlencode', [ function() {
         return function(input) {
             return encodeURIComponent(input);
         };
     }]);
-;angular.module('ui.makelean.user_advice', ['ui.router'])
+
+angular.module('ui.atomic.user_advice', ['ui.router'])
     .directive('userAdvice', ['$http, $document, $rootScope', function($http, $document, $rootScope) {
 
         return {
@@ -1153,7 +1150,8 @@ angular.module("tpl/list/paged-list.html", []).run(["$templateCache", function (
 
         }
     }])
-;;angular.module('ui.makelean.whatsapp', [ 'adaptive.detection' ])
+;
+angular.module('ui.atomic.whatsapp', [ 'adaptive.detection' ])
     .directive('whatsapp', ['$window', '$detection', '$rootScope', function($window, $detection, $rootScope) {
         return {
             restrict: 'A',
@@ -1169,3 +1167,42 @@ angular.module("tpl/list/paged-list.html", []).run(["$templateCache", function (
         }
     }])
 ;
+
+angular.module("template/full-screen/full-screen.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/full-screen/full-screen.html",
+    "<button class=\"btn btn-link pull-right\" data-ng-click=\"cancel()\"><i class=\"ml-icon-30\"></i></button>\n" +
+    "</div>\n" +
+    "<div class=\"modal-body testabit\">\n" +
+    "    <ul rn-carousel class=\"image\">\n" +
+    "        <li ng-repeat=\"image in images\">\n" +
+    "            <img ng-src=\"{{ image }}\"/>\n" +
+    "        </li>\n" +
+    "    </ul>\n" +
+    "</div>");
+}]);
+
+angular.module("template/list/list-item.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/list/list-item.html",
+    "<li class=\"list-group-item basic-item\">\n" +
+    "    <a href=\"\" class=\"card-box \">\n" +
+    "        <div class=\"block-w-img-paragraph\">\n" +
+    "            <h4>Default heading </h4>\n" +
+    "            <p>Default text </p>\n" +
+    "        </div>\n" +
+    "        <i class=\"icon-3\"></i>\n" +
+    "    </a>\n" +
+    "    <div class=\"base-card\"></div>\n" +
+    "</li>");
+}]);
+
+angular.module("template/list/paged-list.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/list/paged-list.html",
+    "<div class='paged-list-container'>\n" +
+    "    <ul data-ng-class=\"listClass\" data-infinite-scroll=\"pager.nextPage(angular.noop, listCache)\"\n" +
+    "        data-infinite-scroll-distance=\"1\" ng-transclude>\n" +
+    "        <list-item data-ng-repeat=\"result in pager.results\" ></list-item>\n" +
+    "    </ul>\n" +
+    "    <span id=\"spinner-mini\"\n" +
+    "          data-us-spinner=\"{lines: 13, length: 0, width: 5, radius: 14, corners: 1, rotate: 0, direction: 1, color: '#000', speed: 1.7, trail: 100, shadow: false, hwaccel: false, className: 'spinner', zIndex: 2e9, top: 'auto', left: 'auto' }\"></span>\n" +
+    "</div>");
+}]);

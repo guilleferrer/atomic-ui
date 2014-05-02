@@ -1,4 +1,4 @@
-angular.module('ui.makelean.whatsapp', [ 'adaptive.detection' ])
+angular.module('ui.atomic.whatsapp', [ 'adaptive.detection' ])
     .directive('whatsapp', ['$window', '$detection', '$rootScope', function($window, $detection, $rootScope) {
         return {
             restrict: 'A',

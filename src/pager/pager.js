@@ -1,4 +1,4 @@
-angular.module("ui.makelean.pager", [])
+angular.module("ui.atomic.pager", [])
 
     .provider('pagerCache', function() {
 

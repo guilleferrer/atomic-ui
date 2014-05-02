@@ -1,4 +1,4 @@
-angular.module('ui.makelean.filter', ['ui.makelean.tools'])
+angular.module('ui.atomic.filter', ['ui.atomic.tools'])
 /**
  * @description
  * The filterHelper creates an interface between the filter and the urls query

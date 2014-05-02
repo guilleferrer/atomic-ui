@@ -1,4 +1,4 @@
-angular.module('ui.makelean.alerts', [])
+angular.module('ui.atomic.alerts', [])
     .run([ '$rootScope', 'validationMessage', '$timeout', function ($rootScope, validationMessage, $timeout) {
 
         // Global alerts Initialization

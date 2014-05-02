@@ -1,4 +1,4 @@
-angular.module('ui.makelean.viewport', [])
+angular.module('ui.atomic.viewport', [])
     .factory('viewport', function () {
 
         var viewPort = getViewPort();

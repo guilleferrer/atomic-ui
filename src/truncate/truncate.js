@@ -1,4 +1,4 @@
-angular.module('filters.makelean.truncate', [])
+angular.module('ui.atomic.truncate', [])
     .filter('truncate', function () {
         return function (text, length, end) {
 

@@ -24,7 +24,7 @@ Configuration
 -------------
 
 
-    angular.module('ui.makelean.testabit')
+    angular.module('ui.atomic.testabit')
             .config(function (testabitProvider) {
                 testabitProvider.setCategories([ 'TestCategory']); // Configure the array of your "allowed categories"
 
