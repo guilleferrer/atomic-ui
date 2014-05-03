@@ -1,9 +1,12 @@
+var markdown = require('node-markdown').Markdown;
+
 module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         modules: [],
         filename: 'ui-atomic',
         version: '0.0.1',
+        ngversion : '1.2.4',
         dist: 'dist',
         meta: {
             modules: 'angular.module("ui.atomic", [<%= srcModules %>]);',
@@ -35,6 +38,10 @@ module.exports = function (grunt) {
             dist: {
                 src: ['<%= concat.dist.dest %>'],
                 dest: '<%= dist %>/<%= filename %>-<%= pkg.version %>.min.js'
+            },
+            dist_tpls:{
+                src:['<%= concat.dist_tpls.dest %>'],
+                dest:'<%= dist %>/<%= filename %>-tpls-<%= pkg.version %>.min.js'
             }
         },
         html2js: {
@@ -50,6 +57,29 @@ module.exports = function (grunt) {
                         ext: '.html.js'
                     }
                 ]
+            }
+        },
+        copy: {
+            demohtml: {
+                options: {
+                    //process html files with gruntfile config
+                    processContent: grunt.template.process
+                },
+                files: [{
+                    expand: true,
+                    src: ['**/*.html'],
+                    cwd: 'misc/demo/',
+                    dest: 'dist/'
+                }]
+            },
+            demoassets: {
+                files: [{
+                    expand: true,
+                    //Don't re-copy html files, we process those
+                    src: ['**/**/*', '!**/*.html'],
+                    cwd: 'misc/demo',
+                    dest: 'dist/'
+                }]
             }
         },
 //        cssmin: {
@@ -147,7 +177,15 @@ module.exports = function (grunt) {
             tplFiles: grunt.file.expand('template/' + name + '/*.html'),
             tpljsFiles: grunt.file.expand('template/' + name + '/*.html.js'),
             tplModules: grunt.file.expand('template/' + name + '/*.html').map(enquote),
-            dependencies: dependenciesForModule(name)
+            dependencies: dependenciesForModule(name),
+            docs: {
+                md: grunt.file.expand('src/'+name+'/docs/*.md')
+                    .map(grunt.file.read).map(markdown).join('\n'),
+                js: grunt.file.expand('src/'+name+'/docs/*.js')
+                    .map(grunt.file.read).join('\n'),
+                html: grunt.file.expand('src/'+name+'/docs/*.html')
+                    .map(grunt.file.read).join('\n')
+            }
         };
 
         module.dependencies.forEach(findModule);
@@ -204,20 +242,20 @@ module.exports = function (grunt) {
         grunt.config('tplModules', _.pluck(modules, 'tplModules').filter(function (tpls) {
             return tpls.length > 0;
         }));
-//        grunt.config('demoModules', modules
-//            .filter(function (module) {
-//                return module.docs.md && module.docs.js && module.docs.html;
-//            })
-//            .sort(function (a, b) {
-//                if (a.name < b.name) {
-//                    return -1;
-//                }
-//                if (a.name > b.name) {
-//                    return 1;
-//                }
-//                return 0;
-//            })
-//        );
+        grunt.config('demoModules', modules
+            .filter(function (module) {
+                return module.docs.md && module.docs.js && module.docs.html;
+            })
+            .sort(function (a, b) {
+                if (a.name < b.name) {
+                    return -1;
+                }
+                if (a.name > b.name) {
+                    return 1;
+                }
+                return 0;
+            })
+        );
 
         var srcFiles = _.pluck(modules, 'srcFiles');
         var tpljsFiles = _.pluck(modules, 'tpljsFiles');
@@ -231,6 +269,6 @@ module.exports = function (grunt) {
         grunt.task.run(['concat', 'uglify']);
     });
 
-    grunt.registerTask('dist', ['html2js:dist', 'build' , 'clean:post_clean' ]);
+    grunt.registerTask('dist', ['html2js:dist', 'build', 'copy'  ]);
 
 };

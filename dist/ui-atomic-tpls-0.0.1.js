@@ -1,6 +1,6 @@
 /*
  * atomic.ui
- * Version: 0.0.1 - 2014-05-02
+ * Version: 0.0.1 - 2014-05-03
  * License: ISC
  */
 angular.module("ui.atomic", ["ui.atomic.tpls" , "ui.atomic.alert","ui.atomic.back","ui.atomic.compile","ui.atomic.confirm","ui.atomic.fbinvite","ui.atomic.tools","ui.atomic.filter","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.nl2br","ui.atomic.search","ui.atomic.testabit","ui.atomic.truncate","ui.atomic.urlencode","ui.atomic.user-advice","ui.atomic.whatsapp"]);
@@ -1171,7 +1171,6 @@ angular.module('ui.atomic.whatsapp', [ 'adaptive.detection' ])
 angular.module("template/full-screen/full-screen.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/full-screen/full-screen.html",
     "<button class=\"btn btn-link pull-right\" data-ng-click=\"cancel()\"><i class=\"ml-icon-30\"></i></button>\n" +
-    "</div>\n" +
     "<div class=\"modal-body testabit\">\n" +
     "    <ul rn-carousel class=\"image\">\n" +
     "        <li ng-repeat=\"image in images\">\n" +
