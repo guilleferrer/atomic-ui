@@ -1,4 +1,4 @@
-angular.module('ui.atomic.full-screen', ['ui.bootstrap', 'ui.atomic.viewport'])
+angular.module('ui.atomic.full-screen', ['ui.bootstrap', 'angular-carousel', 'ui.atomic.viewport'])
     .directive('fullScreen', [ '$modal' , 'viewport', function ($modal, viewport) {
 
         return {
@@ -6,7 +6,6 @@ angular.module('ui.atomic.full-screen', ['ui.bootstrap', 'ui.atomic.viewport'])
                 images: '=fullScreen'
             },
             link: function (scope, element, attrs) {
-
                 var modalInstance;
                 element.on('click', function () {
 

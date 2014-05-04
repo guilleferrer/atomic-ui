@@ -5,8 +5,9 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         modules: [],
         filename: 'ui-atomic',
+        filenamecustom: '<%= filename %>',
         version: '0.0.1',
-        ngversion : '1.2.4',
+        ngversion: '1.2.4',
         dist: 'dist',
         meta: {
             modules: 'angular.module("ui.atomic", [<%= srcModules %>]);',
@@ -39,9 +40,9 @@ module.exports = function (grunt) {
                 src: ['<%= concat.dist.dest %>'],
                 dest: '<%= dist %>/<%= filename %>-<%= pkg.version %>.min.js'
             },
-            dist_tpls:{
-                src:['<%= concat.dist_tpls.dest %>'],
-                dest:'<%= dist %>/<%= filename %>-tpls-<%= pkg.version %>.min.js'
+            dist_tpls: {
+                src: ['<%= concat.dist_tpls.dest %>'],
+                dest: '<%= dist %>/<%= filename %>-tpls-<%= pkg.version %>.min.js'
             }
         },
         html2js: {
@@ -65,21 +66,40 @@ module.exports = function (grunt) {
                     //process html files with gruntfile config
                     processContent: grunt.template.process
                 },
-                files: [{
-                    expand: true,
-                    src: ['**/*.html'],
-                    cwd: 'misc/demo/',
-                    dest: 'dist/'
-                }]
+                files: [
+                    {
+                        expand: true,
+                        src: ['**/*.html'],
+                        cwd: 'misc/demo/',
+                        dest: 'dist/'
+                    }
+                ]
             },
             demoassets: {
-                files: [{
-                    expand: true,
-                    //Don't re-copy html files, we process those
-                    src: ['**/**/*', '!**/*.html'],
-                    cwd: 'misc/demo',
-                    dest: 'dist/'
-                }]
+                files: [
+                    {
+                        expand: true,
+                        //Don't re-copy html files, we process those
+                        src: ['**/**/*', '!**/*.html'],
+                        cwd: 'misc/demo',
+                        dest: 'dist/'
+                    }
+                ]
+            }
+        },
+        delta: {
+            docs: {
+                files: ['misc/demo/index.html'],
+                tasks: ['after-test']
+            },
+            html: {
+                files: ['template/**/*.html'],
+                tasks: ['html2js', 'after-test']
+            },
+            js: {
+                files: ['src/**/*.js'],
+                //we don't need to jshint here, it slows down everything else
+                tasks: [ 'after-test']
             }
         },
 //        cssmin: {
@@ -142,6 +162,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-html2js');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     //Common ui.atomic module containing all modules for src and templates
     //findModule: Adds a given module to config
@@ -179,11 +200,11 @@ module.exports = function (grunt) {
             tplModules: grunt.file.expand('template/' + name + '/*.html').map(enquote),
             dependencies: dependenciesForModule(name),
             docs: {
-                md: grunt.file.expand('src/'+name+'/docs/*.md')
+                md: grunt.file.expand('src/' + name + '/docs/*.md')
                     .map(grunt.file.read).map(markdown).join('\n'),
-                js: grunt.file.expand('src/'+name+'/docs/*.js')
+                js: grunt.file.expand('src/' + name + '/docs/*.js')
                     .map(grunt.file.read).join('\n'),
-                html: grunt.file.expand('src/'+name+'/docs/*.html')
+                html: grunt.file.expand('src/' + name + '/docs/*.html')
                     .map(grunt.file.read).join('\n')
             }
         };
@@ -214,12 +235,9 @@ module.exports = function (grunt) {
                     }
                 });
             });
+
         return deps;
     }
-
-    grunt.registerTask('default', '', function () {
-        return grunt.log.writeln("a task must be provided. Available tasks are: build, dist");
-    });
 
     grunt.registerTask('build', 'Create atomic.ui build files', function () {
 
@@ -269,6 +287,17 @@ module.exports = function (grunt) {
         grunt.task.run(['concat', 'uglify']);
     });
 
-    grunt.registerTask('dist', ['html2js:dist', 'build', 'copy'  ]);
 
+    //register before and after test tasks so we've don't have to change cli
+    //options on the goole's CI server
+    grunt.registerTask('before-test', ['html2js']);
+    grunt.registerTask('after-test', ['build:tools:full-screen', 'copy']);
+
+    //Rename our watch task to 'delta', then make actual 'watch'
+    //task build things, then start test server
+    grunt.renameTask('watch', 'delta');
+    grunt.registerTask('watch', ['before-test', 'after-test', 'delta']);
+
+    // Default task.
+    grunt.registerTask('default', ['before-test', 'after-test']);
 };
