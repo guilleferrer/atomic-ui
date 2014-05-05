@@ -3,8 +3,8 @@
  * Version: 0.0.1 - 2014-05-05
  * License: ISC
  */
-angular.module("ui.atomic", [ "ui.atomic.tpls", "pascalprecht.translate", "ui.atomic.alerts","ui.atomic.back","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.tools"]);
-angular.module("ui.atomic.tpls", ["template/full-screen/full-screen.html"]);
+angular.module("ui.atomic", [ "ui.atomic.tpls", "pascalprecht.translate", "ui.atomic.alerts","ui.atomic.back","ui.atomic.confirm","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.tools"]);
+angular.module("ui.atomic.tpls", ["template/confirm/confirm.html","template/full-screen/full-screen.html"]);
 angular.module('ui.atomic.alerts', [ "ui.bootstrap.alert"])
     .run([ '$rootScope', '$timeout', function ($rootScope, $timeout) {
         // Global alerts Initialization
@@ -55,6 +55,58 @@ angular.module('ui.atomic.back', [ ])
         return function (scope, element, attrs) {
             element.on('click', function () {
                 $window.history.back();
+            });
+        }
+    }]);
+angular.module('ui.atomic.confirm', ['ui.bootstrap'])
+    .directive('confirmUrl', ['$http', '$window', '$modal', function ($http, $window, $modal) {
+
+        return function (scope, element, attrs) {
+
+            var url = attrs.confirmUrl,
+                method = attrs.confirmMethod || 'delete',
+                actionBtnClass = attrs.actionBtnClass || 'btn-ml-danger',
+                followUrl = attrs.followUrl == "true";
+
+            element.bind('click', function (event) {
+
+                event.preventDefault();
+
+                scope.buttons = [
+                    {
+                        label: 'confirm.yes',
+                        result: 1,
+                        cssClass: actionBtnClass
+                    },
+                    {
+                        label: 'confirm.no',
+                        result: 0,
+                        cssClass: 'btn-ml-default'
+                    }
+                ];
+
+                var modalInstance = $modal.open({
+                    scope: scope,
+                    templateUrl: 'template/confirm/confirm.html'
+                });
+
+                scope.close = function (result) {
+                    modalInstance.close(result);
+                };
+
+                modalInstance.result.then(function (result) {
+                    if (result === 1) {
+                        if (followUrl === true) {
+                            $window.location = url;
+                        } else {
+                            $http[method](url).success(function (data) {
+                                scope.$emit('apiEvent.ACTION_SUCCESS', data);
+                            })
+                        }
+                    }
+                });
+
+                return false;
             });
         }
     }]);
@@ -197,6 +249,27 @@ angular.module('ui.atomic.viewport', [])
             'set': setViewPort
         }
     });
+
+angular.module("template/confirm/confirm.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/confirm/confirm.html",
+    "<div class=\"modal-body\">\n" +
+    "    <h4 class=\"margin-add-bottom-10\">{{ 'confirm.title' | translate }}</h4>\n" +
+    "\n" +
+    "    <p class=\"medium-paragraph\">{{ 'confirm.message' | translate }}</p>\n" +
+    "</div>\n" +
+    "<div class=\"modal-footer\">\n" +
+    "    <ul class=\"buttons-list padding-add-x-20 padding-add-bottom-20 margin-rm-all\">\n" +
+    "        <li ng-repeat=\"btn in buttons\">\n" +
+    "            <button\n" +
+    "                    ng-click=\"close(btn.result)\"\n" +
+    "                    class=\"btn btn-block\"\n" +
+    "                    ng-class=\"btn.cssClass\">\n" +
+    "                {{ btn.label | translate }}\n" +
+    "            </button>\n" +
+    "        </li>\n" +
+    "    </ul>\n" +
+    "</div>");
+}]);
 
 angular.module("template/full-screen/full-screen.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/full-screen/full-screen.html",

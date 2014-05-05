@@ -1,0 +1,17 @@
+<div class="modal-body">
+    <h4 class="margin-add-bottom-10">{{ 'confirm.title' | translate }}</h4>
+
+    <p class="medium-paragraph">{{ 'confirm.message' | translate }}</p>
+</div>
+<div class="modal-footer">
+    <ul class="buttons-list padding-add-x-20 padding-add-bottom-20 margin-rm-all">
+        <li ng-repeat="btn in buttons">
+            <button
+                    ng-click="close(btn.result)"
+                    class="btn btn-block"
+                    ng-class="btn.cssClass">
+                {{ btn.label | translate }}
+            </button>
+        </li>
+    </ul>
+</div>

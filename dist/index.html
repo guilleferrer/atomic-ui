@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Atomic UI Components Testabit</title>
-    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Full-screen, ">
+    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Confirm, Full-screen, ">
     <meta name="google-site-verification" content="7lc5HyceLDqpV_6oNHteYFfxDJH7-S3DwnJKtNUKcRg"/>
     <!--<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/0.6.7/fastclick.min.js"></script>-->
     <!--<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>-->
@@ -58,6 +58,8 @@
                             
                             <li><a href="#back">Back</a></li>
                             
+                            <li><a href="#confirm">Confirm</a></li>
+                            
                             <li><a href="#full-screen">Full-screen</a></li>
                             
                         </ul>
@@ -108,6 +110,8 @@
                         <li><a href="#alerts">Alerts</a></li>
                         
                         <li><a href="#back">Back</a></li>
+                        
+                        <li><a href="#confirm">Confirm</a></li>
                         
                         <li><a href="#full-screen">Full-screen</a></li>
                         
@@ -262,6 +266,59 @@
                     </div>
                 </section>
                 <script>function BackDemoCtrl($scope) {}</script>
+                
+                <section id="confirm">
+                    <div class="page-header">
+                        <h1>Confirm
+                            <small>
+                                (ui.atomic.confirm)
+                            </small>
+                        </h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 show-grid">
+                            <div ng-controller="ConfirmDemoCtrl">
+    <button data-confirm-url="/my/url">Show Confirm</button>
+</div>
+                        </div>
+                        <div class="col-md-6">
+                            <p>The confirm-url directive shows a confirmation dialog before calling the url given</p>
+
+<p><em>API</em></p>
+
+<ul>
+<li>confirm-url : {string} The url that is used to call after confirmation</li>
+<li>follow-url: {boolean} Should it act as a link and change page ( to the url given in the confirm-delete parameter )</li>
+</ul>
+
+<p><em>EVENTS</em></p>
+
+<ul>
+<li>apiEvent.ACTION_SUCCESS when follow-url is set to false ( does not change page )</li>
+</ul>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row code">
+                        <div class="col-md-12" >
+                            <tabset>
+                                <tab heading="Markup">
+                                    <div plunker-content="markup">
+                                        <pre ng-non-bindable><code data-language="html">&lt;div ng-controller=&quot;ConfirmDemoCtrl&quot;&gt;
+    &lt;button data-confirm-url=&quot;/my/url&quot;&gt;Show Confirm&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+                                    </div>
+                                </tab>
+                                <tab heading="JavaScript">
+                                    <div plunker-content="javascript">
+                                        <pre ng-non-bindable><code data-language="javascript">function ConfirmDemoCtrl($scope) {}</code></pre>
+                                    </div>
+                                </tab>
+                            </tabset>
+                        </div>
+                    </div>
+                </section>
+                <script>function ConfirmDemoCtrl($scope) {}</script>
                 
                 <section id="full-screen">
                     <div class="page-header">
@@ -450,11 +507,11 @@ The pictures shown in the carousel are those defined in the array <em>images</em
             
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
-                        ng-class="{'btn-primary': module.viewport}"
-                        ng-model="module.viewport"
+                        ng-class="{'btn-primary': module.confirm}"
+                        ng-model="module.confirm"
                         btn-checkbox
-                        ng-change="selectedChanged('viewport', module.viewport)">
-                    Viewport
+                        ng-change="selectedChanged('confirm', module.confirm)">
+                    Confirm
                 </button>
                 
             </div>
@@ -463,6 +520,17 @@ The pictures shown in the carousel are those defined in the array <em>images</em
             
             <div class="btn-group" style="width: 100%;">
                 
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.viewport}"
+                        ng-model="module.viewport"
+                        btn-checkbox
+                        ng-change="selectedChanged('viewport', module.viewport)">
+                    Viewport
+                </button>
+                
+            
+            
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.full-screen}"
@@ -483,6 +551,8 @@ The pictures shown in the carousel are those defined in the array <em>images</em
                     Tools
                 </button>
                 
+            </div>
+            
             
         </div>
     </div>
