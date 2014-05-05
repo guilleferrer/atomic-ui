@@ -89,7 +89,7 @@ module.exports = function (grunt) {
         },
         delta: {
             docs: {
-                files: ['misc/demo/index.html', 'template/docs/*'],
+                files: ['misc/demo/index.html', 'template/++/docs/*'],
                 tasks: ['after-test']
             },
             html: {
@@ -101,10 +101,10 @@ module.exports = function (grunt) {
                 //we don't need to jshint here, it slows down everything else
                 tasks: [ 'after-test']
             },
-            less: {
-                files: 'template/**/less/*.less',
-                tasks: ['less' , 'cssmin']
-            }
+//            less: {
+//                files: 'template/**/less/*.less',
+//                tasks: ['less' , 'cssmin']
+//            }
         },
         less: {
             compileComponents: {

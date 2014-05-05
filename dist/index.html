@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Atomic UI Components Testabit</title>
-    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Confirm, Full-screen, ">
+    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Confirm, Full-screen, Testabit, ">
     <meta name="google-site-verification" content="7lc5HyceLDqpV_6oNHteYFfxDJH7-S3DwnJKtNUKcRg"/>
     <!--<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/0.6.7/fastclick.min.js"></script>-->
     <!--<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>-->
@@ -19,6 +19,7 @@
     <script src="/components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script src="/components/angular-translate/angular-translate.min.js"></script>
     <script src="/components/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
+    <script src="/components/angularitics/src/angulartics.js"></script>
 
     <script src="/components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
     <script src="ui-atomic-tpls-0.0.1.js"></script>
@@ -50,7 +51,7 @@
                     </a>
                     <li class="dropdown">
                         <a role="button" class="dropdown-toggle">
-                            Directives <b class="caret"></b>
+                            Components UI <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
                             
@@ -61,6 +62,8 @@
                             <li><a href="#confirm">Confirm</a></li>
                             
                             <li><a href="#full-screen">Full-screen</a></li>
+                            
+                            <li><a href="#testabit">Testabit</a></li>
                             
                         </ul>
                     </li>
@@ -114,6 +117,8 @@
                         <li><a href="#confirm">Confirm</a></li>
                         
                         <li><a href="#full-screen">Full-screen</a></li>
+                        
+                        <li><a href="#testabit">Testabit</a></li>
                         
                     </ul>
                 </section>
@@ -294,7 +299,7 @@
 <p><em>EVENTS</em></p>
 
 <ul>
-<li>apiEvent.ACTION_SUCCESS when follow-url is set to false ( does not change page )</li>
+<li>"apiEvent.ACTION_SUCCESS" when follow-url is set to false ( does not change page )</li>
 </ul>
                         </div>
                     </div>
@@ -391,6 +396,96 @@ The pictures shown in the carousel are those defined in the array <em>images</em
         },
     ];
 }</script>
+                
+                <section id="testabit">
+                    <div class="page-header">
+                        <h1>Testabit
+                            <small>
+                                (ui.atomic.testabit)
+                            </small>
+                        </h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 show-grid">
+                            <a href="http://plnkr.co/edit/qDrwU6RVVrJbng9fEbnc">Demo in plunkr</a>
+<button data-testabit="modal"
+        data-testabit-category="TestCategory"
+        data-testabit-action="test.button"
+        data-testabit-label="Test Label"
+        data-testabit-value="">
+    Testabit Button
+</button>
+                        </div>
+                        <div class="col-md-6">
+                            <p>** Dependencies</p>
+
+<ul>
+<li>angularitics.js</li>
+</ul>
+
+<p><code>
+    &lt;script src="/components/angularitics/src/angulartics.js"&gt;&lt;/script&gt;
+</code></p>
+
+<p>You can add the testabit behaviour to any button by adding the following attributes:</p>
+
+<h2>API</h2>
+
+<ul>
+<li>testabit="modal" (possible values : "silent", "modal")</li>
+<li>testabit-category="TestCategory"  Required. Analytics Category : see how to define your allowed categories in the configuration</li>
+<li>testabit-action="test.button"  Required: Analytics Action : the action name you want to give it</li>
+<li>testabit-label="Test Label"  Required: Analytics Label : the label you want to give it</li>
+<li>testabit-value=""</li>
+</ul>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row code">
+                        <div class="col-md-12" >
+                            <tabset>
+                                <tab heading="Markup">
+                                    <div plunker-content="markup">
+                                        <pre ng-non-bindable><code data-language="html">&lt;a href=&quot;http://plnkr.co/edit/qDrwU6RVVrJbng9fEbnc&quot;&gt;Demo in plunkr&lt;/a&gt;
+&lt;button data-testabit=&quot;modal&quot;
+        data-testabit-category=&quot;TestCategory&quot;
+        data-testabit-action=&quot;test.button&quot;
+        data-testabit-label=&quot;Test Label&quot;
+        data-testabit-value=&quot;&quot;&gt;
+    Testabit Button
+&lt;/button&gt;</code></pre>
+                                    </div>
+                                </tab>
+                                <tab heading="JavaScript">
+                                    <div plunker-content="javascript">
+                                        <pre ng-non-bindable><code data-language="javascript">angular.module(&#x27;ui.atomic.testabit&#x27;)
+    .config(function (testabitProvider) {
+        // Configure the array of your &quot;allowed categories&quot;
+        testabitProvider.setCategories([ &#x27;TestCategory&#x27;]);
+        /*   When enabling debug mode ( default ) testabit draws the borders of
+         the html element where you are applying the directive
+         If the border is red, the directive is missing some parameter
+         You can see the error in the console of your browser.
+         Set debugMode to false in the prod environment */
+        testabitProvider.debugMode = true;
+    });</code></pre>
+                                    </div>
+                                </tab>
+                            </tabset>
+                        </div>
+                    </div>
+                </section>
+                <script>angular.module('ui.atomic.testabit')
+    .config(function (testabitProvider) {
+        // Configure the array of your "allowed categories"
+        testabitProvider.setCategories([ 'TestCategory']);
+        /*   When enabling debug mode ( default ) testabit draws the borders of
+         the html element where you are applying the directive
+         If the border is red, the directive is missing some parameter
+         You can see the error in the console of your browser.
+         Set debugMode to false in the prod environment */
+        testabitProvider.debugMode = true;
+    });</script>
                 
             </div>
         </div>
@@ -544,6 +639,21 @@ The pictures shown in the carousel are those defined in the array <em>images</em
             
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.testabit}"
+                        ng-model="module.testabit"
+                        btn-checkbox
+                        ng-change="selectedChanged('testabit', module.testabit)">
+                    Testabit
+                </button>
+                
+            </div>
+            
+            
+            
+            <div class="btn-group" style="width: 100%;">
+                
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.tools}"
                         ng-model="module.tools"
                         btn-checkbox
@@ -551,8 +661,6 @@ The pictures shown in the carousel are those defined in the array <em>images</em
                     Tools
                 </button>
                 
-            </div>
-            
             
         </div>
     </div>

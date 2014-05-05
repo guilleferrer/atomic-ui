@@ -1,0 +1,16 @@
+<div class="modal-body testabit">
+    <i class="ml-icon-54"></i>
+    <h4>{{ 'testabit.modal.title' | translate }}</h4>
+    <p>{{ 'testabit.modal.message' | translate }}</p>
+</div>
+<div class="modal-footer">
+    <ul class="double-btn padding-add-x-20 padding-add-bottom-10 margin-rm-all">
+        <li ng-repeat="btn in buttons">
+            <button ng-click="close(btn.result)"
+                    class="btn"
+                    ng-class="btn.cssClass">
+                {{ btn.label | translate }}
+            </button>
+        </li>
+    </ul>
+</div>
