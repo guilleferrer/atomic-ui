@@ -9,18 +9,23 @@
           content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Full-screen, ">
     <meta name="google-site-verification" content="7lc5HyceLDqpV_6oNHteYFfxDJH7-S3DwnJKtNUKcRg"/>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/0.6.7/fastclick.min.js"></script>
+    <!--<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/0.6.7/fastclick.min.js"></script>-->
+    <!--<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>-->
+    <!--<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular-touch.min.js"></script>-->
+    <script src="/components/fastclick/lib/fastclick.js"></script>
     <script src="/components/jquery/dist/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular-touch.min.js"></script>
+    <script src="/components/angular/angular.min.js"></script>
+    <script src="/components/angular-touch/angular-touch.min.js"></script>
 
     <script src="/components/angular-carousel/dist/angular-carousel.min.js"></script>
+    <script src="/components/angular-ui-router/release/angular-ui-router.min.js"></script>
+
     <script src="/components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
     <script src="ui-atomic-tpls-0.0.1.js"></script>
     <script src="assets/app.js"></script>
 
     <link href="assets/theme.css" rel="stylesheet"/>
-    <link href="../components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="ui-atomic-0.0.1.css" rel="stylesheet"/>
     <link rel="stylesheet" href="assets/rainbow.css"/>
     <link rel="stylesheet" href="assets/demo.css"/>
 </head>
@@ -171,6 +176,13 @@
                         <div class="col-md-6">
                             <p>Full screen components opens a Modal that adds a touch carousel
 The pictures shown in the carousel are those defined in the array <em>images</em></p>
+
+<p>API :
+ <em>fullscreen</em> : array of images that you want to show in the carousel
+ <em>onOpen</em>
+ <em>onClose</em></p>
+
+<p>Callbacks:</p>
                         </div>
                     </div>
                     <hr>
@@ -312,17 +324,6 @@ The pictures shown in the carousel are those defined in the array <em>images</em
                 
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
-                        ng-class="{'btn-primary': module.tools}"
-                        ng-model="module.tools"
-                        btn-checkbox
-                        ng-change="selectedChanged('tools', module.tools)">
-                    Tools
-                </button>
-                
-            
-            
-                <button type="button" class="btn btn-default"
-                        style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.viewport}"
                         ng-model="module.viewport"
                         btn-checkbox
@@ -341,6 +342,17 @@ The pictures shown in the carousel are those defined in the array <em>images</em
                     Full-screen
                 </button>
                 
+            
+            
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.tools}"
+                        ng-model="module.tools"
+                        btn-checkbox
+                        ng-change="selectedChanged('tools', module.tools)">
+                    Tools
+                </button>
+                
             </div>
             
             
@@ -353,23 +365,6 @@ The pictures shown in the carousel are those defined in the array <em>images</em
             <i class="glyphicon glyphicon-download-alt"></i> Download {{selectedModules.length}} Modules
         </a>
     </div>
-</script>
-
-<script type="text/javascript">
-
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-37467169-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function () {
-        var ga = document.createElement('script');
-        ga.type = 'text/javascript';
-        ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(ga, s);
-    })();
-
 </script>
 <script src="assets/smoothscroll-angular-custom.js"></script>
 </body>

@@ -100,60 +100,31 @@ module.exports = function (grunt) {
                 files: ['src/**/*.js'],
                 //we don't need to jshint here, it slows down everything else
                 tasks: [ 'after-test']
+            },
+            less: {
+                files: 'template/**/less/*.less',
+                tasks: ['less' , 'cssmin']
             }
         },
-//        cssmin: {
-//            dist: {
-//                cleancss: true,
-//                files: {
-//                    '<%= pkg.buildfolder %>/css/theme.min.css': '<%= dom_munger.data.cssRefs %>'
-//                }
-//            }
-//        },
-//        copy: {
-//            assets: {
-//                files: [
-//                    {
-//                        expand: true,
-//                        src: ['web/bundles/undfatomictheme/webfonts/*'],
-//                        dest: '<%= pkg.buildfolder %>/webfonts/',
-//                        flatten: true
-//                    },
-//                    {
-//                        expand: true,
-//                        src: ['web/bundles/undfatomictheme/iconfonts/*'],
-//                        dest: '<%= pkg.buildfolder %>/iconfonts/',
-//                        flatten: true
-//                    },
-//                    {
-//                        expand: true,
-//                        src: ['web/bundles/undfatomictheme/tb-font/*'],
-//                        dest: '<%= pkg.buildfolder %>/tb-font/',
-//                        flatten: true
-//                    },
-//                    {
-//                        expand: true,
-//                        src: ['web/images/*'],
-//                        dest: '<%= pkg.buildfolder %>/images/',
-//                        flatten: true
-//                    },
-//                    {
-//                        expand: true,
-//                        cwd: 'web/',
-//                        src: ['images/**'],
-//                        dest: '<%= pkg.buildfolder %>/'
-//                    }
-//                ]
-//            }
-//        },
-        clean: {
-            pre_clean: {
-                force: true,
-                src: ['template/**/*.html.js']
-            },
-            post_clean: {
-                force: true,
-                src: ['template/**/*.html.js']
+        less: {
+            compileComponents: {
+                options: {
+                    strictMath: true,
+                    outputSourceFiles: true,
+                    sourceMap: true,
+                    sourceMapURL: '<%= filename %>.css.map',
+                    sourceMapFilename: '<%= dist %>/<%= filename %>.css.map'
+                },
+                files: {
+                    '<%= dist %>/<%= filename %>-<%= pkg.version %>.css': 'template/**/less/*.less'
+                }
+            }
+        },
+        cssmin: {
+            all: {
+                files: {
+                    '<%= dist %>/<%= filename %>-<%= pkg.version %>.min.css': [ '<%= dist %>/<%= filename %>-<%= pkg.version %>.css']
+                }
             }
         }
     });
@@ -163,6 +134,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-html2js');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
 
     //Common ui.atomic module containing all modules for src and templates
     //findModule: Adds a given module to config

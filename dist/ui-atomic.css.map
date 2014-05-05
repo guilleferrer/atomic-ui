@@ -1,0 +1,1 @@
+{"version":3,"sources":["template/multiple-choice/less/multiple-choice.less"],"names":[],"mappings":"AAAA;EACE,eAAA","sourcesContent":[".multiple-choice {\n  background: red;\n}"]}
