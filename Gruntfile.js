@@ -284,14 +284,15 @@ module.exports = function (grunt) {
         grunt.config('concat.dist_tpls.src', grunt.config('concat.dist_tpls.src')
             .concat(srcFiles).concat(tpljsFiles));
 
-        grunt.task.run(['concat', 'uglify']);
+//        grunt.task.run(['concat', 'uglify']);
+        grunt.task.run(['concat']);
     });
 
 
     //register before and after test tasks so we've don't have to change cli
     //options on the goole's CI server
     grunt.registerTask('before-test', ['html2js']);
-    grunt.registerTask('after-test', ['build:tools:full-screen', 'copy']);
+    grunt.registerTask('after-test', ['build', 'copy']);
 
     //Rename our watch task to 'delta', then make actual 'watch'
     //task build things, then start test server
