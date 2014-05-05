@@ -1,10 +1,43 @@
 /*
  * atomic.ui
- * Version: 0.0.1 - 2014-05-04
+ * Version: 0.0.1 - 2014-05-05
  * License: ISC
  */
-angular.module("ui.atomic", ["ui.atomic.tpls" , "ui.atomic.tools","ui.atomic.viewport","ui.atomic.full-screen"]);
+angular.module("ui.atomic", ["ui.atomic.tpls" , "ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.tools"]);
 angular.module("ui.atomic.tpls", ["template/full-screen/full-screen.html"]);
+angular.module('ui.atomic.full-screen', ['ui.bootstrap', 'angular-carousel', 'ui.atomic.viewport'])
+    .directive('fullScreen', [ '$modal' , 'viewport', function ($modal, viewport) {
+
+        return {
+            scope: {
+                images: '=fullScreen'
+            },
+            link: function (scope, element, attrs) {
+                var modalInstance;
+                element.on('click', function () {
+
+                    modalInstance = $modal.open({
+                        windowClass: 'full-modal full-screen',
+                        templateUrl: 'template/full-screen/full-screen.html',
+                        scope: scope
+                    });
+
+                    modalInstance.opened.then(function () {
+                        viewport.set('maximum-scale', '2');
+                    });
+
+                    modalInstance.result.then(function () {
+                        viewport.set('maximum-scale', '1');
+                    })
+                })
+
+                scope.cancel = function () {
+                    modalInstance.close();
+                }
+
+            }
+        }
+    }]);
 angular.module('ui.atomic.tools', [])
     .factory('urlTools', function () {
 
@@ -112,44 +145,10 @@ angular.module('ui.atomic.viewport', [])
         }
     });
 
-angular.module('ui.atomic.full-screen', ['ui.bootstrap', 'angular-carousel', 'ui.atomic.viewport'])
-    .directive('fullScreen', [ '$modal' , 'viewport', function ($modal, viewport) {
-
-        return {
-            scope: {
-                images: '=fullScreen'
-            },
-            link: function (scope, element, attrs) {
-                var modalInstance;
-                element.on('click', function () {
-
-                    modalInstance = $modal.open({
-                        windowClass: 'full-modal full-screen',
-                        templateUrl: 'template/full-screen/full-screen.html',
-                        scope: scope
-                    });
-
-                    modalInstance.opened.then(function () {
-                        viewport.set('maximum-scale', '2');
-                    });
-
-                    modalInstance.result.then(function () {
-                        viewport.set('maximum-scale', '1');
-                    })
-                })
-
-                scope.cancel = function () {
-                    modalInstance.close();
-                }
-
-            }
-        }
-    }]);
 angular.module("template/full-screen/full-screen.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/full-screen/full-screen.html",
     "<button class=\"btn btn-link pull-right\" data-ng-click=\"cancel()\"><i class=\"ml-icon-30\"></i></button>\n" +
     "<div class=\"modal-body testabit\">\n" +
-    "    Esto es un Carousel Full width\n" +
     "    <ul rn-carousel rn-carousel-control class=\"image\">\n" +
     "        <li ng-repeat=\"image in images\">\n" +
     "            <img ng-src=\"{{ image.url }}\"/>\n" +
