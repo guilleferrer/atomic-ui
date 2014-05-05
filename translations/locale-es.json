@@ -1,3 +1,4 @@
 {
-    "fullscreen.title" : "El título de mi full Screen"
+    "fullscreen.title" : "El título de mi full Screen",
+    "validationMessage" : "Vaya, ha habido un error de validación. Corrige los errores y vuelve a probar. Disculpen las molestias"
 }

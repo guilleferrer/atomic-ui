@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Atomic UI Components Testabit</title>
-    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Full-screen, ">
+    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Full-screen, ">
     <meta name="google-site-verification" content="7lc5HyceLDqpV_6oNHteYFfxDJH7-S3DwnJKtNUKcRg"/>
     <!--<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/0.6.7/fastclick.min.js"></script>-->
     <!--<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>-->
@@ -54,6 +54,10 @@
                         </a>
                         <ul class="dropdown-menu">
                             
+                            <li><a href="#alerts">Alerts</a></li>
+                            
+                            <li><a href="#back">Back</a></li>
+                            
                             <li><a href="#full-screen">Full-screen</a></li>
                             
                         </ul>
@@ -100,6 +104,10 @@
                 <section class="bs-sidebar visible-xs" id="directives_small">
                     <ul class="nav bs-sidenav">
                         <li><a href="#"><strong>Directives</strong></a></li>
+                        
+                        <li><a href="#alerts">Alerts</a></li>
+                        
+                        <li><a href="#back">Back</a></li>
                         
                         <li><a href="#full-screen">Full-screen</a></li>
                         
@@ -158,6 +166,102 @@
                     <!--<pre><code>.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }</code></pre>-->
                     <!--</p>-->
                 <!--</section>-->
+                
+                <section id="alerts">
+                    <div class="page-header">
+                        <h1>Alerts
+                            <small>
+                                (ui.atomic.alerts)
+                            </small>
+                        </h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 show-grid">
+                            <div ng-controller="AlertsDemoCtrl">
+    <button ng-click="showAlert()">Show alert</button>
+    <alert ng-repeat="alert in $root.alerts" type="alert.type" close="$root.closeAlert($index)">
+        {{alert.msg | translate }}
+    </alert>
+</div>
+                        </div>
+                        <div class="col-md-6">
+                            <p>Alerts usage documentation: TODO</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row code">
+                        <div class="col-md-12" >
+                            <tabset>
+                                <tab heading="Markup">
+                                    <div plunker-content="markup">
+                                        <pre ng-non-bindable><code data-language="html">&lt;div ng-controller=&quot;AlertsDemoCtrl&quot;&gt;
+    &lt;button ng-click=&quot;showAlert()&quot;&gt;Show alert&lt;/button&gt;
+    &lt;alert ng-repeat=&quot;alert in $root.alerts&quot; type=&quot;alert.type&quot; close=&quot;$root.closeAlert($index)&quot;&gt;
+        {{alert.msg | translate }}
+    &lt;/alert&gt;
+&lt;/div&gt;</code></pre>
+                                    </div>
+                                </tab>
+                                <tab heading="JavaScript">
+                                    <div plunker-content="javascript">
+                                        <pre ng-non-bindable><code data-language="javascript">function AlertsDemoCtrl($scope) {
+
+    $scope.showAlert = function(){
+        $scope.$emit(&#x27;alert.show&#x27;, { type: &#x27;danger&#x27;, msg: &#x27;validationMessage&#x27;, keep: false })
+    }
+}</code></pre>
+                                    </div>
+                                </tab>
+                            </tabset>
+                        </div>
+                    </div>
+                </section>
+                <script>function AlertsDemoCtrl($scope) {
+
+    $scope.showAlert = function(){
+        $scope.$emit('alert.show', { type: 'danger', msg: 'validationMessage', keep: false })
+    }
+}</script>
+                
+                <section id="back">
+                    <div class="page-header">
+                        <h1>Back
+                            <small>
+                                (ui.atomic.back)
+                            </small>
+                        </h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 show-grid">
+                            <div ng-controller="BackDemoCtrl">
+    <button data-back >Go back in history</button>
+</div>
+                        </div>
+                        <div class="col-md-6">
+                            <p>Back directive documentation</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row code">
+                        <div class="col-md-12" >
+                            <tabset>
+                                <tab heading="Markup">
+                                    <div plunker-content="markup">
+                                        <pre ng-non-bindable><code data-language="html">&lt;div ng-controller=&quot;BackDemoCtrl&quot;&gt;
+    &lt;button data-back &gt;Go back in history&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+                                    </div>
+                                </tab>
+                                <tab heading="JavaScript">
+                                    <div plunker-content="javascript">
+                                        <pre ng-non-bindable><code data-language="javascript">function BackDemoCtrl($scope) {}</code></pre>
+                                    </div>
+                                </tab>
+                            </tabset>
+                        </div>
+                    </div>
+                </section>
+                <script>function BackDemoCtrl($scope) {}</script>
                 
                 <section id="full-screen">
                     <div class="page-header">
@@ -324,6 +428,28 @@ The pictures shown in the carousel are those defined in the array <em>images</em
                 
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.alerts}"
+                        ng-model="module.alerts"
+                        btn-checkbox
+                        ng-change="selectedChanged('alerts', module.alerts)">
+                    Alerts
+                </button>
+                
+            
+            
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.back}"
+                        ng-model="module.back"
+                        btn-checkbox
+                        ng-change="selectedChanged('back', module.back)">
+                    Back
+                </button>
+                
+            
+            
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.viewport}"
                         ng-model="module.viewport"
                         btn-checkbox
@@ -331,8 +457,12 @@ The pictures shown in the carousel are those defined in the array <em>images</em
                     Viewport
                 </button>
                 
+            </div>
             
             
+            
+            <div class="btn-group" style="width: 100%;">
+                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.full-screen}"
@@ -353,8 +483,6 @@ The pictures shown in the carousel are those defined in the array <em>images</em
                     Tools
                 </button>
                 
-            </div>
-            
             
         </div>
     </div>

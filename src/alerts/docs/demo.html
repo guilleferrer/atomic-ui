@@ -1,0 +1,6 @@
+<div ng-controller="AlertsDemoCtrl">
+    <button ng-click="showAlert()">Show alert</button>
+    <alert ng-repeat="alert in $root.alerts" type="alert.type" close="$root.closeAlert($index)">
+        {{alert.msg | translate }}
+    </alert>
+</div>
