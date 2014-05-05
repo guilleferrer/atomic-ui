@@ -2,3 +2,4 @@
 .idea/
 components/
 node_modules/
+*.html.js

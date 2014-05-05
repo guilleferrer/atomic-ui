@@ -3,7 +3,7 @@
  * Version: 0.0.1 - 2014-05-05
  * License: ISC
  */
-angular.module("ui.atomic", ["ui.atomic.tpls" , "ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.tools"]);
+angular.module("ui.atomic", [ "ui.atomic.tpls", "pascalprecht.translate", "ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.tools"]);
 angular.module("ui.atomic.tpls", ["template/full-screen/full-screen.html"]);
 angular.module('ui.atomic.full-screen', ['ui.bootstrap', 'angular-carousel', 'ui.atomic.viewport'])
     .directive('fullScreen', [ '$modal' , 'viewport', function ($modal, viewport) {
@@ -148,6 +148,7 @@ angular.module('ui.atomic.viewport', [])
 angular.module("template/full-screen/full-screen.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/full-screen/full-screen.html",
     "<button class=\"btn btn-link pull-right\" data-ng-click=\"cancel()\"><i class=\"ml-icon-30\"></i></button>\n" +
+    "<h1>{{ 'fullscreen.title' | translate }}</h1>\n" +
     "<div class=\"modal-body testabit\">\n" +
     "    <ul rn-carousel rn-carousel-control class=\"image\">\n" +
     "        <li ng-repeat=\"image in images\">\n" +

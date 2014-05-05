@@ -22,7 +22,9 @@
     "angular-adaptive-detection": "0.2.0",
     "fastclick": "~1.0.0",
     "angular-carousel": "*",
-    "angular-cookies": "~1.2.16"
+    "angular-cookies": "~1.2.16",
+    "angular-translate": "~2.1.0",
+    "angular-translate-loader-static-files": "~2.1.0"
   },
   "authors": [
     "Guillermo Ferrer <guilleferrer@gmail.com>"
