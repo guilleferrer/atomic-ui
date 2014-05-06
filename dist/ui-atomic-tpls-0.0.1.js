@@ -679,7 +679,7 @@ angular.module('ui.atomic.list', ['ui.atomic.pager', 'ui.atomic.infinite-scroll'
             replace: true,
             templateUrl: function (tElement, tAttrs) {
 
-                return tAttrs.itemTplUrl || '/template/list/list-item.html';
+                return tAttrs.itemTplUrl || 'template/list/list-item.html';
             }
         };
     });
