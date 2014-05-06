@@ -1,0 +1,1 @@
+Truncates a text

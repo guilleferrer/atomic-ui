@@ -3,7 +3,7 @@
  * Version: 0.0.1 - 2014-05-06
  * License: ISC
  */
-angular.module("ui.atomic", ["ui.atomic.alerts","ui.atomic.back","ui.atomic.compile","ui.atomic.confirm","ui.atomic.fbinvite","ui.atomic.tools","ui.atomic.filter","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.search","ui.atomic.testabit","ui.atomic.user-advice","ui.atomic.whatsapp"]);
+angular.module("ui.atomic", ["ui.atomic.alerts","ui.atomic.back","ui.atomic.compile","ui.atomic.confirm","ui.atomic.fbinvite","ui.atomic.tools","ui.atomic.filter","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.nl2br","ui.atomic.search","ui.atomic.testabit","ui.atomic.truncate","ui.atomic.urlencode","ui.atomic.user-advice","ui.atomic.whatsapp"]);
 angular.module('ui.atomic.alerts', [ "ui.bootstrap.alert"])
     .run([ '$rootScope', '$timeout', function ($rootScope, $timeout) {
         // Global alerts Initialization
@@ -706,6 +706,19 @@ angular.module('ui.atomic.mailto', [ ])
             }
         }
     });
+angular.module('ui.atomic.nl2br', [])
+    .filter('nl2br', [function () {
+        return function (text, is_xhtml) {
+            if (text) {
+                var is_xhtml = is_xhtml || true;
+                var breakTag = (is_xhtml) ? '<br />' : '<br>';
+                var text = (text + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+                return text;
+            }
+            return '';
+        }
+    }]
+    );
 angular.module("ui.atomic.search", ['ui.atomic.pager'])
 
     /**
@@ -1011,6 +1024,36 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
         $scope.buttons = model.buttons;
     }])
 ;
+angular.module('ui.atomic.truncate', [])
+    .filter('truncate', function () {
+        return function (text, length, end) {
+
+            if(!text) {
+                return '';
+            }
+            if (isNaN(length))
+                length = 100;
+
+            if (end === undefined)
+                end = "...";
+
+            if (text.length <= length || text.length - end.length <= length) {
+                return text;
+            }
+            else {
+                return String(text).substring(0, length-end.length) + end;
+            }
+
+        };
+    });
+
+angular.module('ui.atomic.urlencode', [])
+    .filter('urlencode', [ function() {
+        return function(input) {
+            return encodeURIComponent(input);
+        };
+    }]);
+
 angular.module('ui.atomic.user-advice', [])
     .directive('userAdvice', ['$http, $document, $rootScope', function ($http, $document, $rootScope) {
 
