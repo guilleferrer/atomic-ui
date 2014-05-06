@@ -1,8 +1,5 @@
 {
-    "fullscreen.title" : "El título de mi full Screen",
-    "validationMessage" : "Vaya, ha habido un error de validación. Corrige los errores y vuelve a probar. Disculpen las molestias",
-    "confirm.title" : "Confirmar",
-    "confirm.message" : "¿Estás seguro de que deseas continuar?",
-    "confirm.yes" : "¿Por supuesto!",
-    "confirm.no" : "Paso!"
+    "alerts.form.validationMessage" : "Vaya, ha habido un error de validación. Corrige los errores y vuelve a probar. Disculpen las molestias",
+    "testabit.button.yes" : "Sí",
+    "testabit.button.no" : "No"
 }

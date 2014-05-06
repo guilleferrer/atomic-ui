@@ -24,10 +24,10 @@ angular.module('ui.atomic.alerts', [ "ui.bootstrap.alert"])
         };
 
         $rootScope.$on('submit.error', function (event, form) {
-            addAlert({ type: 'danger', msg: 'validationMessage', keep: false });
+            addAlert({ type: 'danger', msg: 'alerts.form.validationMessage', keep: false });
         });
 
-        // When you want to emit an aler, include the following alert object:
+        // When you want to emit an alert, include the following alert object:
         /* 
          * { 
          *    type : 'danger', // info, warning, success
@@ -89,53 +89,62 @@ angular.module('ui.atomic.compile', [], ['$compileProvider', function ($compileP
 angular.module('ui.atomic.confirm', ['ui.bootstrap'])
     .directive('confirmUrl', ['$http', '$window', '$modal', function ($http, $window, $modal) {
 
-        return function (scope, element, attrs) {
+        return {
+            scope: {
+                title: '@confirmTitle',
+                message: '@confirmMessage',
+                buttonYes: '@confirmYes',
+                buttonNo: '@confirmNo'
+            },
+            link: function (scope, element, attrs) {
 
-            var url = attrs.confirmUrl,
-                method = attrs.confirmMethod || 'delete',
-                actionBtnClass = attrs.actionBtnClass || 'btn-ml-danger',
-                followUrl = attrs.followUrl == "true";
+                var url = attrs.confirmUrl,
+                    method = attrs.confirmMethod || 'delete',
+                    actionBtnClass = attrs.actionBtnClass || 'btn-ml-danger',
+                    followUrl = attrs.followUrl == "true";
 
-            element.bind('click', function (event) {
+                element.bind('click', function (event) {
 
-                event.preventDefault();
+                    event.preventDefault();
 
-                scope.buttons = [
-                    {
-                        label: 'confirm.yes',
-                        result: 1,
-                        cssClass: actionBtnClass
-                    },
-                    {
-                        label: 'confirm.no',
-                        result: 0,
-                        cssClass: 'btn-ml-default'
-                    }
-                ];
-
-                var modalInstance = $modal.open({
-                    scope: scope,
-                    templateUrl: 'template/confirm/confirm.html'
-                });
-
-                scope.close = function (result) {
-                    modalInstance.close(result);
-                };
-
-                modalInstance.result.then(function (result) {
-                    if (result === 1) {
-                        if (followUrl === true) {
-                            $window.location = url;
-                        } else {
-                            $http[method](url).success(function (data) {
-                                scope.$emit('apiEvent.ACTION_SUCCESS', data);
-                            })
+                    scope.buttons = [
+                        {
+                            label: scope.buttonYes,
+                            result: 1,
+                            cssClass: actionBtnClass
+                        },
+                        {
+                            label: scope.buttonNo,
+                            result: 0,
+                            cssClass: 'btn-ml-default'
                         }
-                    }
-                });
+                    ];
 
-                return false;
-            });
+                    var modalInstance = $modal.open({
+                        scope: scope,
+                        templateUrl: 'template/confirm/confirm.html'
+                    });
+
+                    scope.close = function (result) {
+                        modalInstance.close(result);
+                    };
+
+                    modalInstance.result.then(function (result) {
+                        if (result === 1) {
+                            if (followUrl === true) {
+                                $window.location = url;
+                            } else {
+                                $http[method](url).success(function (data) {
+                                    scope.$emit('apiEvent.ACTION_SUCCESS', data);
+                                })
+                            }
+                        }
+                    });
+
+                    return false;
+                });
+            }
+
         }
     }]);
 angular.module('ui.atomic.fbinvite', [ ]).
@@ -978,12 +987,12 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
                 if (attrs.testabit === "modal") {
                     var btns = [
                         {
-                            label: 'testabit.no',
+                            label: 'testabit.button.no',
                             result: 0,
                             cssClass: 'btn-ml-default'
                         },
                         {
-                            label: 'testabit.yes',
+                            label: 'testabit.button.yes',
                             result: 1,
                             cssClass: 'btn-ml-primary'
                         }
@@ -1098,9 +1107,9 @@ angular.module('ui.atomic.whatsapp', [ 'adaptive.detection' ])
 angular.module("template/confirm/confirm.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/confirm/confirm.html",
     "<div class=\"modal-body\">\n" +
-    "    <h4 class=\"margin-add-bottom-10\">{{ 'confirm.title' | translate }}</h4>\n" +
+    "    <h4 class=\"margin-add-bottom-10\">{{ title }}</h4>\n" +
     "\n" +
-    "    <p class=\"medium-paragraph\">{{ 'confirm.message' | translate }}</p>\n" +
+    "    <p class=\"medium-paragraph\">{{ message }}</p>\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
     "    <ul class=\"buttons-list padding-add-x-20 padding-add-bottom-20 margin-rm-all\">\n" +
@@ -1109,7 +1118,7 @@ angular.module("template/confirm/confirm.html", []).run(["$templateCache", funct
     "                    ng-click=\"close(btn.result)\"\n" +
     "                    class=\"btn btn-block\"\n" +
     "                    ng-class=\"btn.cssClass\">\n" +
-    "                {{ btn.label | translate }}\n" +
+    "                {{ btn.label }}\n" +
     "            </button>\n" +
     "        </li>\n" +
     "    </ul>\n" +
@@ -1119,9 +1128,8 @@ angular.module("template/confirm/confirm.html", []).run(["$templateCache", funct
 angular.module("template/full-screen/full-screen.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/full-screen/full-screen.html",
     "<button class=\"btn btn-link pull-right\" data-ng-click=\"cancel()\"><i class=\"ml-icon-30\"></i></button>\n" +
-    "<h1>{{ 'fullscreen.title' | translate }}</h1>\n" +
     "<div class=\"modal-body testabit\">\n" +
-    "    <ul rn-carousel rn-carousel-control class=\"image\">\n" +
+    "    <ul data-rn-carousel data-rn-carousel-control class=\"image\">\n" +
     "        <li ng-repeat=\"image in images\">\n" +
     "            <img ng-src=\"{{ image.url }}\"/>\n" +
     "        </li>\n" +

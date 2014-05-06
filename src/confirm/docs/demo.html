@@ -1,3 +1,10 @@
 <div ng-controller="ConfirmDemoCtrl">
-    <button data-confirm-url="/my/url">Show Confirm</button>
+    <button data-confirm-url="/my/url"
+            data-confirm-title="Confirmation"
+            data-confirm-message="Are you sure you want to delete the User?"
+            data-confirm-yes='Yeahhh'
+            data-confirm-no='Noooo'
+            data-follow-url="false">
+        Delete User
+    </button>
 </div>

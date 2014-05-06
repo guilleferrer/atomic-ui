@@ -257,8 +257,7 @@ module.exports = function (grunt) {
         grunt.config('concat.dist_tpls.src', grunt.config('concat.dist_tpls.src')
             .concat(srcFiles).concat(tpljsFiles));
 
-//        grunt.task.run(['concat', 'uglify']);
-        grunt.task.run(['concat']);
+        grunt.task.run(['concat', 'uglify']);
     });
 
 

@@ -1,3 +1,5 @@
 {
-    "fullscreen.title" : "My full screen's title"
+    "alerts.form.validationMessage" : "Oops, there was an error in the validation of your data. Please correct the errors and try again",
+    "testabit.button.yes" : "Yes",
+    "testabit.button.no" : "No"
 }

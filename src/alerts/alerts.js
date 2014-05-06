@@ -17,10 +17,10 @@ angular.module('ui.atomic.alerts', [ "ui.bootstrap.alert"])
         };
 
         $rootScope.$on('submit.error', function (event, form) {
-            addAlert({ type: 'danger', msg: 'validationMessage', keep: false });
+            addAlert({ type: 'danger', msg: 'alerts.form.validationMessage', keep: false });
         });
 
-        // When you want to emit an aler, include the following alert object:
+        // When you want to emit an alert, include the following alert object:
         /* 
          * { 
          *    type : 'danger', // info, warning, success

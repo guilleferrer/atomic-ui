@@ -1,7 +1,6 @@
 <button class="btn btn-link pull-right" data-ng-click="cancel()"><i class="ml-icon-30"></i></button>
-<h1>{{ 'fullscreen.title' | translate }}</h1>
 <div class="modal-body testabit">
-    <ul rn-carousel rn-carousel-control class="image">
+    <ul data-rn-carousel data-rn-carousel-control class="image">
         <li ng-repeat="image in images">
             <img ng-src="{{ image.url }}"/>
         </li>

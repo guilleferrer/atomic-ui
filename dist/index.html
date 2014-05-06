@@ -23,7 +23,7 @@
 
     <script src="/components/angular-mocks/angular-mocks.js"></script>
     <script src="/components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
-    <script src="ui-atomic-tpls-0.0.1.js"></script>
+    <script src="ui-atomic-tpls-0.0.1.min.js"></script>
     <script src="assets/app.js"></script>
     <link href="assets/theme.css" rel="stylesheet"/>
     <link href="ui-atomic-0.0.1.css" rel="stylesheet"/>
@@ -221,7 +221,7 @@
                             <div ng-controller="AlertsDemoCtrl">
     <button ng-click="showAlert()">Show alert</button>
     <alert ng-repeat="alert in $root.alerts" type="alert.type" close="$root.closeAlert($index)">
-        {{alert.msg | translate }}
+       {{ alert.msg | translate }}
     </alert>
 </div>
                         </div>
@@ -238,7 +238,7 @@
                                         <pre ng-non-bindable><code data-language="html">&lt;div ng-controller=&quot;AlertsDemoCtrl&quot;&gt;
     &lt;button ng-click=&quot;showAlert()&quot;&gt;Show alert&lt;/button&gt;
     &lt;alert ng-repeat=&quot;alert in $root.alerts&quot; type=&quot;alert.type&quot; close=&quot;$root.closeAlert($index)&quot;&gt;
-        {{alert.msg | translate }}
+       {{ alert.msg | translate }}
     &lt;/alert&gt;
 &lt;/div&gt;</code></pre>
                                     </div>
@@ -248,7 +248,7 @@
                                         <pre ng-non-bindable><code data-language="javascript">function AlertsDemoCtrl($scope) {
 
     $scope.showAlert = function(){
-        $scope.$emit(&#x27;alert.show&#x27;, { type: &#x27;danger&#x27;, msg: &#x27;validationMessage&#x27;, keep: false })
+        $scope.$emit(&#x27;alert.show&#x27;, { type: &#x27;danger&#x27;, msg: &#x27;This is a danger alert for demo purposes&#x27;, keep: false })
     }
 }</code></pre>
                                     </div>
@@ -260,7 +260,7 @@
                 <script>function AlertsDemoCtrl($scope) {
 
     $scope.showAlert = function(){
-        $scope.$emit('alert.show', { type: 'danger', msg: 'validationMessage', keep: false })
+        $scope.$emit('alert.show', { type: 'danger', msg: 'This is a danger alert for demo purposes', keep: false })
     }
 }</script>
                 
@@ -315,20 +315,31 @@
                     <div class="row">
                         <div class="col-md-6 show-grid">
                             <div ng-controller="ConfirmDemoCtrl">
-    <button data-confirm-url="/my/url">Show Confirm</button>
+    <button data-confirm-url="/my/url"
+            data-confirm-title="Confirmation"
+            data-confirm-message="Are you sure you want to delete the User?"
+            data-confirm-yes='Yeahhh'
+            data-confirm-no='Noooo'
+            data-follow-url="false">
+        Delete User
+    </button>
 </div>
                         </div>
                         <div class="col-md-6">
                             <p>The confirm-url directive shows a confirmation dialog before calling the url given</p>
 
-<p><em>API</em></p>
+<p><strong>API</strong></p>
 
 <ul>
 <li>confirm-url : {string} The url that is used to call after confirmation</li>
 <li>follow-url: {boolean} Should it act as a link and change page ( to the url given in the confirm-delete parameter )</li>
+<li>confirm-title : {string} Modal title</li>
+<li>confirm-message : {string} Modal message</li>
+<li>confirm-yes : {string} Modal yes button text</li>
+<li>confirm-no : {string} Modal no button text</li>
 </ul>
 
-<p><em>EVENTS</em></p>
+<p><strong>EVENTS</strong></p>
 
 <ul>
 <li>"apiEvent.ACTION_SUCCESS" when follow-url is set to false ( does not change page )</li>
@@ -342,7 +353,14 @@
                                 <tab heading="Markup">
                                     <div plunker-content="markup">
                                         <pre ng-non-bindable><code data-language="html">&lt;div ng-controller=&quot;ConfirmDemoCtrl&quot;&gt;
-    &lt;button data-confirm-url=&quot;/my/url&quot;&gt;Show Confirm&lt;/button&gt;
+    &lt;button data-confirm-url=&quot;/my/url&quot;
+            data-confirm-title=&quot;Confirmation&quot;
+            data-confirm-message=&quot;Are you sure you want to delete the User?&quot;
+            data-confirm-yes=&#x27;Yeahhh&#x27;
+            data-confirm-no=&#x27;Noooo&#x27;
+            data-follow-url=&quot;false&quot;&gt;
+        Delete User
+    &lt;/button&gt;
 &lt;/div&gt;</code></pre>
                                     </div>
                                 </tab>
@@ -418,10 +436,7 @@ The pictures shown in the carousel are those defined in the array <em>images</em
 <p><strong>Dependencies</strong></p>
 
 <ul>
-<li>infinite-scroll
-<code>
-    &lt;script src="/components/angularitics/src/angulartics.js"&gt;&lt;/script&gt;
-</code></li>
+<li>angular-carousel</li>
 </ul>
 
 <p><strong>API</strong>
