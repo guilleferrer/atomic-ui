@@ -930,6 +930,19 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
                 error = true;
             }
 
+            if (attrs.testabit === "modal") {
+                // You must define the title
+                if (!attrs.testabitModalTitle) {
+                    $log.log(testabitError("Invalid modal title '" + attrs.testabitModalTitle + "' . You have configured testabit type modal, so you must introduce the title of the modal"));
+                    error = true;
+                }
+                // And the message
+                if (!attrs.testabitModalMessage) {
+                    $log.log(testabitError("Invalid modal message '" + attrs.testabitModalMessage + "' . You have configured testabit type modal, so you must introduce the message of the modal"));
+                    error = true;
+                }
+            }
+
             // Check Category
             if (-1 === testabit.allowedCategories.indexOf(attrs.testabitCategory)) {
                 $log.log(testabitError("Invalid category '" + attrs.testabitCategory + "' . The category should be one of these : "), testabit.allowedCategories);
@@ -998,6 +1011,8 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
                         resolve: {
                             model: function () {
                                 return {
+                                    title: attrs.testabitModalTitle,
+                                    message: attrs.testabitModalMessage,
                                     buttons: btns
                                 }
                             }
@@ -1026,6 +1041,8 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
         };
 
         $scope.buttons = model.buttons;
+        $scope.title = model.title;
+        $scope.message = model.message;
     }])
 ;
 angular.module('ui.atomic.truncate', [])

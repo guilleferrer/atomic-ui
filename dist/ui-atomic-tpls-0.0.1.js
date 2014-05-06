@@ -931,6 +931,19 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
                 error = true;
             }
 
+            if (attrs.testabit === "modal") {
+                // You must define the title
+                if (!attrs.testabitModalTitle) {
+                    $log.log(testabitError("Invalid modal title '" + attrs.testabitModalTitle + "' . You have configured testabit type modal, so you must introduce the title of the modal"));
+                    error = true;
+                }
+                // And the message
+                if (!attrs.testabitModalMessage) {
+                    $log.log(testabitError("Invalid modal message '" + attrs.testabitModalMessage + "' . You have configured testabit type modal, so you must introduce the message of the modal"));
+                    error = true;
+                }
+            }
+
             // Check Category
             if (-1 === testabit.allowedCategories.indexOf(attrs.testabitCategory)) {
                 $log.log(testabitError("Invalid category '" + attrs.testabitCategory + "' . The category should be one of these : "), testabit.allowedCategories);
@@ -999,6 +1012,8 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
                         resolve: {
                             model: function () {
                                 return {
+                                    title: attrs.testabitModalTitle,
+                                    message: attrs.testabitModalMessage,
                                     buttons: btns
                                 }
                             }
@@ -1027,6 +1042,8 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
         };
 
         $scope.buttons = model.buttons;
+        $scope.title = model.title;
+        $scope.message = model.message;
     }])
 ;
 angular.module('ui.atomic.truncate', [])
@@ -1164,8 +1181,8 @@ angular.module("template/testabit/modal.html", []).run(["$templateCache", functi
   $templateCache.put("template/testabit/modal.html",
     "<div class=\"modal-body testabit\">\n" +
     "    <i class=\"ml-icon-54\"></i>\n" +
-    "    <h4>{{ 'testabit.modal.title' | translate }}</h4>\n" +
-    "    <p>{{ 'testabit.modal.message' | translate }}</p>\n" +
+    "    <h4>{{ title }}</h4>\n" +
+    "    <p>{{ message }}</p>\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
     "    <ul class=\"double-btn padding-add-x-20 padding-add-bottom-10 margin-rm-all\">\n" +
