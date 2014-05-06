@@ -17,6 +17,7 @@ module.exports = function (grunt) {
                 ' * <%= pkg.name %>',
                 ' * Version: <%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>',
                 ' * License: <%= pkg.license %>',
+                ' * Author: <%= pkg.author %>',
                 ' */\n'].join('\n')
         },
         concat: {
@@ -36,6 +37,9 @@ module.exports = function (grunt) {
             }
         },
         uglify: {
+            options: {
+                banner: '<%= meta.banner %>'
+            },
             dist: {
                 src: ['<%= concat.dist.dest %>'],
                 dest: '<%= dist %>/<%= filename %>-<%= pkg.version %>.min.js'
