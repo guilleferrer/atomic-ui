@@ -12,7 +12,7 @@ module.exports = function (grunt) {
         meta: {
             modules: 'angular.module("ui.atomic", [<%= srcModules %>]);',
             tplmodules: 'angular.module("ui.atomic.tpls", [<%= tplModules %>]);',
-            all: 'angular.module("ui.atomic", [ "ui.atomic.tpls", "pascalprecht.translate", <%= srcModules %>]);',
+            all: 'angular.module("ui.atomic", [ "pascalprecht.translate", "ui.atomic.tpls", <%= srcModules %>]);',
             banner: ['/*',
                 ' * <%= pkg.name %>',
                 ' * Version: <%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>',
