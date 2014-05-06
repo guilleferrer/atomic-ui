@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Atomic UI Components Testabit</title>
-    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Confirm, Full-screen, Testabit, ">
+    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Confirm, Full-screen, List, Mailto, Testabit, ">
     <meta name="google-site-verification" content="7lc5HyceLDqpV_6oNHteYFfxDJH7-S3DwnJKtNUKcRg"/>
     <!--<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/0.6.7/fastclick.min.js"></script>-->
     <!--<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>-->
@@ -14,17 +14,16 @@
     <script src="/components/jquery/dist/jquery.min.js"></script>
     <script src="/components/angular/angular.min.js"></script>
     <script src="/components/angular-touch/angular-touch.min.js"></script>
-
     <script src="/components/angular-carousel/dist/angular-carousel.min.js"></script>
     <script src="/components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script src="/components/angular-translate/angular-translate.min.js"></script>
     <script src="/components/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
     <script src="/components/angularitics/src/angulartics.js"></script>
 
+    <script src="/components/angular-mocks/angular-mocks.js"></script>
     <script src="/components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
     <script src="ui-atomic-tpls-0.0.1.js"></script>
     <script src="assets/app.js"></script>
-
     <link href="assets/theme.css" rel="stylesheet"/>
     <link href="ui-atomic-0.0.1.css" rel="stylesheet"/>
     <link rel="stylesheet" href="assets/rainbow.css"/>
@@ -62,6 +61,10 @@
                             <li><a href="#confirm">Confirm</a></li>
                             
                             <li><a href="#full-screen">Full-screen</a></li>
+                            
+                            <li><a href="#list">List</a></li>
+                            
+                            <li><a href="#mailto">Mailto</a></li>
                             
                             <li><a href="#testabit">Testabit</a></li>
                             
@@ -117,6 +120,10 @@
                         <li><a href="#confirm">Confirm</a></li>
                         
                         <li><a href="#full-screen">Full-screen</a></li>
+                        
+                        <li><a href="#list">List</a></li>
+                        
+                        <li><a href="#mailto">Mailto</a></li>
                         
                         <li><a href="#testabit">Testabit</a></li>
                         
@@ -343,10 +350,17 @@
                             <p>Full screen components opens a Modal that adds a touch carousel
 The pictures shown in the carousel are those defined in the array <em>images</em></p>
 
-<p>API :
- <em>fullscreen</em> : array of images that you want to show in the carousel
- <em>onOpen</em>
- <em>onClose</em></p>
+<p><strong>Dependencies</strong></p>
+
+<ul>
+<li>infinite-scroll
+<code>
+    &lt;script src="/components/angularitics/src/angulartics.js"&gt;&lt;/script&gt;
+</code></li>
+</ul>
+
+<p><strong>API</strong>
+ - fullscreen : array of images that you want to show in the carousel</p>
 
 <p>Callbacks:</p>
                         </div>
@@ -397,6 +411,187 @@ The pictures shown in the carousel are those defined in the array <em>images</em
     ];
 }</script>
                 
+                <section id="list">
+                    <div class="page-header">
+                        <h1>List
+                            <small>
+                                (ui.atomic.list)
+                            </small>
+                        </h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 show-grid">
+                            <div ng-controller="ListDemoCtrl">
+    <list data-api-url="/api/entities" data-list-class="media-list">
+        <list-item data-ng-repeat="item in pager.results"></list-item>
+        <button ng-click="pager.nextPage()">Next Page</button>
+    </list>
+</div>
+
+                        </div>
+                        <div class="col-md-6">
+                            <p>List creates a paginated list that fetches the data from the server in a paginated order</p>
+
+<p><strong>API</strong>
+  - api-url : (string) url where the list is going to obtain the data from ( e.g. "/api/users" )
+  - api-query : (object) query to be added to the api url in order to filter for the results ( e.g '{}')
+  - list-class : (string) class for the UL element
+  - list-cache (boolean) pager should use cache or not</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row code">
+                        <div class="col-md-12" >
+                            <tabset>
+                                <tab heading="Markup">
+                                    <div plunker-content="markup">
+                                        <pre ng-non-bindable><code data-language="html">&lt;div ng-controller=&quot;ListDemoCtrl&quot;&gt;
+    &lt;list data-api-url=&quot;/api/entities&quot; data-list-class=&quot;media-list&quot;&gt;
+        &lt;list-item data-ng-repeat=&quot;item in pager.results&quot;&gt;&lt;/list-item&gt;
+        &lt;button ng-click=&quot;pager.nextPage()&quot;&gt;Next Page&lt;/button&gt;
+    &lt;/list&gt;
+&lt;/div&gt;
+</code></pre>
+                                    </div>
+                                </tab>
+                                <tab heading="JavaScript">
+                                    <div plunker-content="javascript">
+                                        <pre ng-non-bindable><code data-language="javascript">function ListDemoCtrl($httpBackend) {
+    var firstPage = {
+        nbPages: 2,
+        nbResults: 2,
+        results: [
+            {
+                title: &quot;First Item&quot;,
+                description: &quot;Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut, consectetur eius exercitationem inventore ipsam itaque labore magnam nihil non placeat praesentium quidem quod reprehenderit soluta sunt suscipit vero voluptates voluptatibus?&quot;,
+                imageUrl: &quot;http://www.lorempixel.com/50/50&quot;
+            },
+            {
+                title: &quot;Second Item&quot;,
+                description: &quot;Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut, consectetur eius exercitationem inventore ipsam itaque labore magnam nihil non placeat praesentium quidem quod reprehenderit soluta sunt suscipit vero voluptates voluptatibus?&quot;,
+                imageUrl: &quot;http://www.lorempixel.com/50/50&quot;
+            }
+        ]};
+    var secondPage = {
+        nbPages: 2,
+        nbResults: 2,
+        results: [
+            {
+                title: &quot;Third Item&quot;,
+                description: &quot;Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut, consectetur eius exercitationem inventore ipsam itaque labore magnam nihil non placeat praesentium quidem quod reprehenderit soluta sunt suscipit vero voluptates voluptatibus?&quot;,
+                imageUrl: &quot;http://www.lorempixel.com/50/50&quot;
+            },
+            {
+                title: &quot;Fourth Item&quot;,
+                description: &quot;Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut, consectetur eius exercitationem inventore ipsam itaque labore magnam nihil non placeat praesentium quidem quod reprehenderit soluta sunt suscipit vero voluptates voluptatibus?&quot;,
+                imageUrl: &quot;http://www.lorempixel.com/50/50&quot;
+            }
+        ]};
+
+    $httpBackend.whenGET(/^\/api\/entities\?page=1/).respond(firstPage)
+    $httpBackend.whenGET(/^\/api\/entities\?page=2/).respond(secondPage)
+}</code></pre>
+                                    </div>
+                                </tab>
+                            </tabset>
+                        </div>
+                    </div>
+                </section>
+                <script>function ListDemoCtrl($httpBackend) {
+    var firstPage = {
+        nbPages: 2,
+        nbResults: 2,
+        results: [
+            {
+                title: "First Item",
+                description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut, consectetur eius exercitationem inventore ipsam itaque labore magnam nihil non placeat praesentium quidem quod reprehenderit soluta sunt suscipit vero voluptates voluptatibus?",
+                imageUrl: "http://www.lorempixel.com/50/50"
+            },
+            {
+                title: "Second Item",
+                description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut, consectetur eius exercitationem inventore ipsam itaque labore magnam nihil non placeat praesentium quidem quod reprehenderit soluta sunt suscipit vero voluptates voluptatibus?",
+                imageUrl: "http://www.lorempixel.com/50/50"
+            }
+        ]};
+    var secondPage = {
+        nbPages: 2,
+        nbResults: 2,
+        results: [
+            {
+                title: "Third Item",
+                description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut, consectetur eius exercitationem inventore ipsam itaque labore magnam nihil non placeat praesentium quidem quod reprehenderit soluta sunt suscipit vero voluptates voluptatibus?",
+                imageUrl: "http://www.lorempixel.com/50/50"
+            },
+            {
+                title: "Fourth Item",
+                description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut, consectetur eius exercitationem inventore ipsam itaque labore magnam nihil non placeat praesentium quidem quod reprehenderit soluta sunt suscipit vero voluptates voluptatibus?",
+                imageUrl: "http://www.lorempixel.com/50/50"
+            }
+        ]};
+
+    $httpBackend.whenGET(/^\/api\/entities\?page=1/).respond(firstPage)
+    $httpBackend.whenGET(/^\/api\/entities\?page=2/).respond(secondPage)
+}</script>
+                
+                <section id="mailto">
+                    <div class="page-header">
+                        <h1>Mailto
+                            <small>
+                                (ui.atomic.mailto)
+                            </small>
+                        </h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 show-grid">
+                            <div ng-controller="MailtoDemoCtrl">
+    <button data-mailto="'developer@testabit.com'"
+            data-mailto-subject="This is a subject!"
+            data-mailto-content="Hey, great content here!">
+        Send email to developer@testabit.com
+    </button>
+</div>
+                        </div>
+                        <div class="col-md-6">
+                            <p>Mailto is a directive to send emails via the "mailto://" ptrotocol. It Opens the default mail client installed in your machine</p>
+
+<p><strong>API</strong>
+- data-mailto: Predefined receiver email address.
+- data-mailto-subject: Predefined subject of the email.
+- data-mailto-content: Predefined content of the email</p>
+
+<p><a href="http://plnkr.co/edit/aVPxy3gTGMTTDh9qLVOh">Plunker</a></p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row code">
+                        <div class="col-md-12" >
+                            <tabset>
+                                <tab heading="Markup">
+                                    <div plunker-content="markup">
+                                        <pre ng-non-bindable><code data-language="html">&lt;div ng-controller=&quot;MailtoDemoCtrl&quot;&gt;
+    &lt;button data-mailto=&quot;&#x27;developer@testabit.com&#x27;&quot;
+            data-mailto-subject=&quot;This is a subject!&quot;
+            data-mailto-content=&quot;Hey, great content here!&quot;&gt;
+        Send email to developer@testabit.com
+    &lt;/button&gt;
+&lt;/div&gt;</code></pre>
+                                    </div>
+                                </tab>
+                                <tab heading="JavaScript">
+                                    <div plunker-content="javascript">
+                                        <pre ng-non-bindable><code data-language="javascript">function MailtoDemoCtrl() {
+
+}</code></pre>
+                                    </div>
+                                </tab>
+                            </tabset>
+                        </div>
+                    </div>
+                </section>
+                <script>function MailtoDemoCtrl() {
+
+}</script>
+                
                 <section id="testabit">
                     <div class="page-header">
                         <h1>Testabit
@@ -407,7 +602,7 @@ The pictures shown in the carousel are those defined in the array <em>images</em
                     </div>
                     <div class="row">
                         <div class="col-md-6 show-grid">
-                            <a href="http://plnkr.co/edit/qDrwU6RVVrJbng9fEbnc">Demo in plunkr</a>
+                            <a class="pull-right" href="http://plnkr.co/edit/qDrwU6RVVrJbng9fEbnc">Demo in plunkr</a>
 <button data-testabit="modal"
         data-testabit-category="TestCategory"
         data-testabit-action="test.button"
@@ -417,19 +612,19 @@ The pictures shown in the carousel are those defined in the array <em>images</em
 </button>
                         </div>
                         <div class="col-md-6">
-                            <p>** Dependencies</p>
+                            <p><strong>Dependencies</strong></p>
 
 <ul>
-<li>angularitics.js</li>
-</ul>
+<li><p>angularitics.js</p>
 
 <p><code>
     &lt;script src="/components/angularitics/src/angulartics.js"&gt;&lt;/script&gt;
-</code></p>
+</code></p></li>
+</ul>
 
 <p>You can add the testabit behaviour to any button by adding the following attributes:</p>
 
-<h2>API</h2>
+<p><strong>API</strong></p>
 
 <ul>
 <li>testabit="modal" (possible values : "silent", "modal")</li>
@@ -446,7 +641,7 @@ The pictures shown in the carousel are those defined in the array <em>images</em
                             <tabset>
                                 <tab heading="Markup">
                                     <div plunker-content="markup">
-                                        <pre ng-non-bindable><code data-language="html">&lt;a href=&quot;http://plnkr.co/edit/qDrwU6RVVrJbng9fEbnc&quot;&gt;Demo in plunkr&lt;/a&gt;
+                                        <pre ng-non-bindable><code data-language="html">&lt;a class=&quot;pull-right&quot; href=&quot;http://plnkr.co/edit/qDrwU6RVVrJbng9fEbnc&quot;&gt;Demo in plunkr&lt;/a&gt;
 &lt;button data-testabit=&quot;modal&quot;
         data-testabit-category=&quot;TestCategory&quot;
         data-testabit-action=&quot;test.button&quot;
@@ -639,11 +834,11 @@ The pictures shown in the carousel are those defined in the array <em>images</em
             
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
-                        ng-class="{'btn-primary': module.testabit}"
-                        ng-model="module.testabit"
+                        ng-class="{'btn-primary': module.infinite-scroll}"
+                        ng-model="module.infinite-scroll"
                         btn-checkbox
-                        ng-change="selectedChanged('testabit', module.testabit)">
-                    Testabit
+                        ng-change="selectedChanged('infinite-scroll', module.infinite-scroll)">
+                    Infinite-scroll
                 </button>
                 
             </div>
@@ -652,6 +847,54 @@ The pictures shown in the carousel are those defined in the array <em>images</em
             
             <div class="btn-group" style="width: 100%;">
                 
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.pager}"
+                        ng-model="module.pager"
+                        btn-checkbox
+                        ng-change="selectedChanged('pager', module.pager)">
+                    Pager
+                </button>
+                
+            
+            
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.list}"
+                        ng-model="module.list"
+                        btn-checkbox
+                        ng-change="selectedChanged('list', module.list)">
+                    List
+                </button>
+                
+            
+            
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.mailto}"
+                        ng-model="module.mailto"
+                        btn-checkbox
+                        ng-change="selectedChanged('mailto', module.mailto)">
+                    Mailto
+                </button>
+                
+            </div>
+            
+            
+            
+            <div class="btn-group" style="width: 100%;">
+                
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.testabit}"
+                        ng-model="module.testabit"
+                        btn-checkbox
+                        ng-change="selectedChanged('testabit', module.testabit)">
+                    Testabit
+                </button>
+                
+            
+            
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.tools}"

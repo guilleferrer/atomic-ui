@@ -1,0 +1,6 @@
+<div ng-controller="ListDemoCtrl">
+    <list data-api-url="/api/entities" data-list-class="media-list">
+        <list-item data-ng-repeat="item in pager.results"></list-item>
+        <button ng-click="pager.nextPage()">Next Page</button>
+    </list>
+</div>

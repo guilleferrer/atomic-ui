@@ -89,7 +89,7 @@ module.exports = function (grunt) {
         },
         delta: {
             docs: {
-                files: ['misc/demo/index.html', 'template/++/docs/*'],
+                files: ['misc/demo/index.html', 'misc/demo/app.js', 'src/**/docs/*'],
                 tasks: ['after-test']
             },
             html: {

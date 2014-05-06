@@ -1,10 +1,10 @@
 /*
  * atomic.ui
- * Version: 0.0.1 - 2014-05-05
+ * Version: 0.0.1 - 2014-05-06
  * License: ISC
  */
-angular.module("ui.atomic", [ "ui.atomic.tpls", "pascalprecht.translate", "ui.atomic.alerts","ui.atomic.back","ui.atomic.confirm","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.testabit","ui.atomic.tools"]);
-angular.module("ui.atomic.tpls", ["template/confirm/confirm.html","template/full-screen/full-screen.html","template/testabit/modal.html"]);
+angular.module("ui.atomic", [ "ui.atomic.tpls", "pascalprecht.translate", "ui.atomic.alerts","ui.atomic.back","ui.atomic.confirm","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.testabit","ui.atomic.tools"]);
+angular.module("ui.atomic.tpls", ["template/confirm/confirm.html","template/full-screen/full-screen.html","template/list/list-item.html","template/list/paged-list.html","template/testabit/modal.html"]);
 angular.module('ui.atomic.alerts', [ "ui.bootstrap.alert"])
     .run([ '$rootScope', '$timeout', function ($rootScope, $timeout) {
         // Global alerts Initialization
@@ -143,6 +143,282 @@ angular.module('ui.atomic.full-screen', ['ui.bootstrap', 'angular-carousel', 'ui
             }
         }
     }]);
+/* ng-infinite-scroll - v1.0.0 - 2013-02-23 */
+angular.module('ui.atomic.infinite-scroll', [])
+    .directive('infiniteScroll', ['$rootScope', '$window', '$timeout', function ($rootScope, $window, $timeout) {
+        return {
+            link: function (scope, elem, attrs) {
+                var checkWhenEnabled, handler, scrollDistance, scrollEnabled;
+                $window = angular.element($window);
+                scrollDistance = 0;
+                if (attrs.infiniteScrollDistance != null) {
+                    scope.$watch(attrs.infiniteScrollDistance, function (value) {
+                        return scrollDistance = parseFloat(value);
+                    });
+                }
+                scrollEnabled = true;
+                checkWhenEnabled = false;
+                if (attrs.infiniteScrollDisabled != null) {
+                    scope.$watch(attrs.infiniteScrollDisabled, function (value) {
+                        scrollEnabled = !value;
+                        if (scrollEnabled && checkWhenEnabled) {
+                            checkWhenEnabled = false;
+                            return handler();
+                        }
+                    });
+                }
+                handler = function () {
+                    var elementBottom, remaining, shouldScroll, windowBottom;
+                    windowBottom = $window.height();// + elem.parent().scrollTop();
+                    elementBottom = elem.offset().top + elem.height();
+                    remaining = elementBottom - windowBottom;
+                    shouldScroll = remaining <= 20 * scrollDistance;
+                    if (shouldScroll && scrollEnabled) {
+                        if ($rootScope.$$phase) {
+                            return scope.$eval(attrs.infiniteScroll);
+                        } else {
+                            return scope.$apply(attrs.infiniteScroll);
+                        }
+                    } else if (shouldScroll) {
+                        return checkWhenEnabled = true;
+                    }
+                };
+
+                elem.parents('.scroller').on('scroll', handler);
+                scope.$on('$destroy', function () {
+                    return elem.parents('.scroller').off('scroll', handler);
+                });
+                return $timeout((function () {
+                    if (attrs.infiniteScrollImmediateCheck) {
+                        if (scope.$eval(attrs.infiniteScrollImmediateCheck)) {
+                            return handler();
+                        }
+                    } else {
+                        return handler();
+                    }
+                }), 0);
+            }
+        };
+    }
+    ]);
+
+angular.module("ui.atomic.pager", [])
+
+    .provider('pagerCache', function () {
+
+        this.$get = ['$cacheFactory', function ($cacheFactory) {
+            return $cacheFactory('pager');
+        }];
+    })
+    .provider('Pager', function () {
+
+
+        var initialPage = 1;
+        /**
+         * You can define if you want to start from a certain page
+         * by default uses 0
+         *
+         * @param page
+         */
+        this.setInitialPage = function (page) {
+            initialPage = page;
+        }
+
+
+        this.$get = ['$http', '$rootScope', 'pagerCache', function ($http, $rootScope, pagerCache) {
+
+
+            /**
+             * Creates a Pager that fetches data from the url
+             * with the given search parameters
+             *
+             * @param string url
+             * @param {} search
+             * @constructor
+             */
+            function Pager(url, search, middleware) {
+                this.id = new Date().getTime();
+                this.search = search || {};
+                this.middleware = middleware || function (item) {
+                    return item;
+                };
+                this.url = url;
+                this.page = initialPage;
+                this.finished = false;
+                this.busy = false;
+                this.showNoResults = false;
+                this.results = [];
+                this.nbResults = 0;
+                this.nbUnread = 0;
+            }
+
+
+            function toKeyValue(obj, prefix) {
+                var str = [];
+                for (var p in obj) {
+                    var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+                    str.push(typeof v == "object" ?
+                        toKeyValue(v, k) :
+                        encodeURIComponent(k) + "=" + encodeURIComponent(v));
+                }
+                return str.join("&");
+            }
+
+            function encodeUriQuery(val, pctEncodeSpaces) {
+                return encodeURIComponent(val).
+                    replace(/%40/gi, '@').
+                    replace(/%3A/gi, ':').
+                    replace(/%24/g, '$').
+                    replace(/%2C/gi, ',').
+                    replace(/%20/g, (pctEncodeSpaces ? '%20' : '+'));
+            }
+
+            /**
+             * Gets the new page
+             */
+            Pager.prototype.nextPage = function (callback, useCache) {
+                var getParams = {};
+
+                if (useCache !== false) {
+                    getParams.cache = pagerCache;
+                }
+
+                /**
+                 * The pager is still busy with the last request of new Page
+                 */
+                if (this.busy) {
+                    return;
+                }
+
+                /**
+                 * The pager has already finished all the pages to be loaded
+                 */
+                if (this.finished) {
+                    return;
+                }
+
+                /**
+                 * First of all, mark as busy
+                 */
+                this.busy = true;
+
+
+                var url = this.url;
+                this.search = angular.extend(this.search, {'page': this.page});
+                var search = toKeyValue(this.search);
+                url = url + (search ? '?' + search : '');
+
+
+                var that = this;
+                /**
+                 * Call for the results of next page
+                 */
+                $http
+                    .get(url, getParams)
+                    .then(function (response) {
+
+                        var data = response.data
+                        that.busy = false;
+                        that.nbResults = data.nbResults;
+                        that.nbUnread += data.nbUnread;
+
+                        that.showNoResults = data.results.length == 0;
+
+                        // TODO middleware for paged lists?
+
+                        // TODO : handle removal of DOM elements for long lists
+                        angular.forEach(data.results, function (feed) {
+                            that.results.push(that.middleware(feed));
+                        });
+
+
+                        /**
+                         * If there are no pages, then show the no-activity page
+                         */
+                        if (data.nbPages == 0 && that.results.length == 0) {
+                            // Attach the pager id in the no_results event
+                            $rootScope.$broadcast('pager.no_results', that.id);
+                        }
+
+                        if (angular.isFunction(callback)) {
+                            callback(that);
+                        }
+
+                        $rootScope.$broadcast('pager.page_loaded', that.page, that.results);
+                        /**
+                         * If it reached the end of the list... do not increase the page anymore
+                         * Mark finished=true
+                         */
+                        if (data.nbPages == that.page || data.results.length == 0) {
+                            that.finished = true;
+                            $rootScope.$broadcast('pager.last_page');
+                            return;
+                        }
+                        that.page += 1;
+                    });
+            };
+
+            return Pager;
+        }]
+    });
+
+
+angular.module('ui.atomic.list', ['ui.atomic.pager', 'ui.atomic.infinite-scroll'])
+    .directive('list', [ 'Pager', '$rootScope', function (Pager, $rootScope) {
+        return {
+            restrict: 'E',
+            templateUrl: 'template/list/paged-list.html',
+            replace: true,
+            transclude: true,
+            link: function (scope, element, attrs) {
+                scope.listClass = attrs.listClass || 'list-group';
+                scope.listCache = attrs.$attr.listNoCache ? false : true;
+                var query = scope.$eval(attrs.apiQuery) || {};
+                scope.pager = new Pager(attrs.apiUrl, query);
+
+                $rootScope.$on('searchEvent.SEARCH_CHANGE', function (event, value, params) {
+                    angular.extend(query, params);
+                    scope.pager = new Pager(attrs.apiUrl, query);
+                    scope.pager.nextPage();
+                })
+            }
+        };
+    }])
+    .directive('listItem', function () {
+
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: function (tElement, tAttrs) {
+
+                return tAttrs.itemTplUrl || '/template/list/list-item.html';
+            }
+        };
+    });
+angular.module('ui.atomic.mailto', [ ])
+    .directive('mailto', function () {
+        return {
+            restrict: 'A',
+            scope: {
+                mailto: '='
+            },
+            link: function (scope, element, attrs) {
+                var mailto = attrs.mailto,
+                    mailtoSubject = attrs.mailtoSubject,
+                    mailtoContent = attrs.mailtoContent;
+
+                element.bind("click", function () {
+                    window.location = "mailto:" + mailto + "?subject=" + mailtoSubject + "&body=" + encodeURIComponent(mailtoContent);
+                });
+
+                scope.$watch('mailto', function (value) {
+                    if (value) {
+                        mailto = value;
+                    }
+                })
+            }
+        }
+    });
 angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstrap'])
     .config(['$analyticsProvider', function ($analyticsProvider) {
         var lastVisitedPage = '/';
@@ -454,6 +730,34 @@ angular.module("template/full-screen/full-screen.html", []).run(["$templateCache
     "            <img ng-src=\"{{ image.url }}\"/>\n" +
     "        </li>\n" +
     "    </ul>\n" +
+    "</div>");
+}]);
+
+angular.module("template/list/list-item.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/list/list-item.html",
+    "<li class=\"media padding-add-all-10 border-add-bottom\">\n" +
+    "    <a class=\"media-item-link clickable\" data-on-click=\"mediaItemClick()\">\n" +
+    "        <img class=\"media-object masked pull-left\" data-ng-src=\"{{ item.imageUrl }}\">\n" +
+    "        <div class=\"media-body\">\n" +
+    "            <h4 class=\"media-heading\">{{ item.title }}</h4>\n" +
+    "            <p>{{ item.description }}</p>\n" +
+    "            <span class=\"media-badge \">{{ item.badge }}</span>\n" +
+    "        </div>\n" +
+    "    </a>\n" +
+    "\n" +
+    "</li>");
+}]);
+
+angular.module("template/list/paged-list.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/list/paged-list.html",
+    "<div class=\"paged-list-container\">\n" +
+    "    <ul data-ng-class=\"listClass\" data-infinite-scroll=\"pager.nextPage(angular.noop, listCache)\" data-infinite-scroll-distance=\"1\" data-ng-transclude>\n" +
+    "        <list-item data-ng-repeat=\"result in pager.results\"></list-item>\n" +
+    "    </ul>\n" +
+    "\n" +
+    "    <span id=\"spinner-mini\" data-us-spinner=\"{lines: 13, length: 0, width: 5, radius: 14, corners: 1, rotate: 0,\n" +
+    "    direction: 1, color: '#000', speed: 1.7, trail: 100, shadow: false, hwaccel: false, className: 'spinner', zIndex:\n" +
+    "    2e9, top: 'auto', left: 'auto' }\"></span>\n" +
     "</div>");
 }]);
 
