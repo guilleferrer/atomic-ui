@@ -3,7 +3,7 @@
  * Version: 0.0.1 - 2014-05-06
  * License: ISC
  */
-angular.module("ui.atomic", ["ui.atomic.alerts","ui.atomic.back","ui.atomic.confirm","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.testabit","ui.atomic.tools"]);
+angular.module("ui.atomic", ["ui.atomic.alerts","ui.atomic.back","ui.atomic.compile","ui.atomic.confirm","ui.atomic.fbinvite","ui.atomic.tools","ui.atomic.filter","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.search","ui.atomic.testabit","ui.atomic.user-advice","ui.atomic.whatsapp"]);
 angular.module('ui.atomic.alerts', [ "ui.bootstrap.alert"])
     .run([ '$rootScope', '$timeout', function ($rootScope, $timeout) {
         // Global alerts Initialization
@@ -57,6 +57,34 @@ angular.module('ui.atomic.back', [ ])
             });
         }
     }]);
+angular.module('ui.atomic.compile', [], ['$compileProvider', function ($compileProvider) {
+    // configure new 'compile' directive by passing a directive
+    // factory function. The factory function injects the '$compile'
+    $compileProvider.directive('compile', [ '$compile', function ($compile) {
+        // directive factory creates a link function
+        return function (scope, element, attrs) {
+            scope.$watch(
+                function (scope) {
+                    // watch the 'compile' expression for changes
+                    return scope.$eval(attrs.compile);
+                },
+                function (value) {
+                    // when the 'compile' expression changes
+                    // assign it into the current DOM
+                    element.html(value);
+
+                    // compile the new DOM and link it to the current
+                    // scope.
+                    // NOTE: we only compile .childNodes so that
+                    // we don't get into infinite loop compiling ourselves
+                    $compile(element.contents())(scope);
+                }
+            );
+        };
+    }])
+}]);
+
+
 angular.module('ui.atomic.confirm', ['ui.bootstrap'])
     .directive('confirmUrl', ['$http', '$window', '$modal', function ($http, $window, $modal) {
 
@@ -109,6 +137,266 @@ angular.module('ui.atomic.confirm', ['ui.bootstrap'])
             });
         }
     }]);
+angular.module('ui.atomic.fbinvite', [ ]).
+    factory('Facebook', function () {
+        var requestNonAppFriends = function (params, callback) {
+            FB.ui({
+                method: 'apprequests',
+                filters: ['app_non_users'],
+                title: params.title,
+                message: params.message
+            }, function (response) {
+                if (response && callback) {
+                    callback(response);
+                }
+            });
+        };
+
+        return {
+            fb: function () {
+                return FB;
+            },
+            requestNonAppFriends: function (params, callback) {
+                requestNonAppFriends(params, callback);
+            }
+        }
+    })
+    .directive('fbinvite', ['$http, Facebook', function ($http, Facebook) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs, controller) {
+                var fb = Facebook;
+                if (angular.isUndefined(attrs.fbinviteMessage)) {
+                    throw 'fbinvite-message parameter is required';
+                }
+                var params = {title: attrs.fbinviteTitle, message: attrs.fbinviteMessage};
+                element.on("click", function () {
+                    fb.requestNonAppFriends(params);
+                });
+            }
+        }
+    }]);
+
+
+angular.module('ui.atomic.tools', [])
+    .factory('urlTools', function () {
+
+        function toKeyValue(obj, prefix) {
+            var str = [];
+            for (var p in obj) {
+                var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+                str.push(typeof v == "object" ?
+                    toKeyValue(v, k) :
+                    encodeURIComponent(k) + "=" + encodeURIComponent(v));
+            }
+            return str.join("&");
+        }
+
+        /**
+         * Tries to decode the URI component without throwing an exception.
+         *
+         * @private
+         * @param str value potential URI component to check.
+         * @returns {boolean} True if `value` can be decoded
+         * with the decodeURIComponent function.
+         */
+        function tryDecodeURIComponent(value) {
+            try {
+                return decodeURIComponent(value);
+            } catch (e) {
+                // Ignore any invalid uri component
+            }
+        }
+
+
+        /**
+         * Parses an escaped url query string into key-value pairs.
+         * @returns Object.<(string|boolean)>
+         */
+        function parseKeyValue(/**string*/keyValue) {
+            var obj = {}, key_value, key;
+            angular.forEach((keyValue || "").split('&'), function (keyValue) {
+                if (keyValue) {
+                    key_value = keyValue.split('=');
+                    key = tryDecodeURIComponent(key_value[0]);
+                    if (angular.isDefined(key)) {
+                        var val = angular.isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
+                        if (!obj[key]) {
+                            obj[key] = val;
+                        } else if (isArray(obj[key])) {
+                            obj[key].push(val);
+                        } else {
+                            obj[key] = [obj[key], val];
+                        }
+                    }
+                }
+            });
+            return obj;
+        }
+
+        return {
+            'toKeyValue': toKeyValue,
+            'parseKeyValue': parseKeyValue
+        };
+    });
+
+angular.module('ui.atomic.viewport', [])
+    .factory('viewport', function () {
+
+        var viewPort = getViewPort();
+
+        function getViewPort() {
+            var viewPortContent = angular.element('meta[name="viewport"]').attr('content')
+
+            return parseViewPortContent(viewPortContent);
+        }
+
+
+        function parseViewPortContent(viewPortContent) {
+            var obj = {};
+            var viewPortContentArray = viewPortContent.replace(/ /g, '').split(',');
+            angular.forEach(viewPortContentArray, function (part) {
+                var parts = part.split('=');
+                this[parts[0]] = parts[1];
+            }, obj);
+
+            return obj;
+        }
+
+        function serializeViewPortContent(obj) {
+            var parts = [];
+            angular.forEach(obj, function (value, key) {
+                parts.push(key + '=' + value);
+            });
+
+            return parts.join(',');
+        }
+
+        function setViewPort(key, value) {
+            viewPort[key] = value;
+
+            var serializedViewPort = serializeViewPortContent(viewPort);
+            angular.element('meta[name="viewport"]').attr('content', serializedViewPort)
+        }
+
+        return {
+            'get': getViewPort,
+            'set': setViewPort
+        }
+    });
+
+angular.module('ui.atomic.filter', ['ui.atomic.tools'])
+/**
+ * @description
+ * The filterHelper creates an interface between the filter and the urls query
+ *
+ * @api :
+ *   - searchToQuery :
+ *          reads the 'q' from the url and returns a query {object}
+ *          @return {object}
+ *   - formToSearch :
+ *          transforms a form {object} into a key-value url-encoded 'string'
+ *          @return string
+ */
+    .factory('filterHelper', ['urlTools', '$stateParams', function (urlTools, $stateParams) {
+
+        function searchToQuery() {
+            return urlTools.parseKeyValue($stateParams.q);
+        }
+
+        function formToSearch(form) {
+            var search = {};
+            if (Object.keys(form).length > 0) {
+                search['q'] = urlTools.toKeyValue(form, null);
+            }
+
+            return search;
+        }
+
+        return {
+            'searchToQuery': searchToQuery,
+            'formToSearch': formToSearch
+        };
+    }])
+/**
+ * @description
+ * The mlFilter directive is an attribute directive that is applied to a form and creates a filter form that creates
+ * a unique query url ( e.g. /api/resource?q=automatically-created-query ) that can be used to filter api results in a certain api call.
+ * The parameter "q" is created as the key of the query value and cannot be changed ( yet ).
+ * Also, it creates a "filter" model in the current scope, that can be accessed in the template.
+ *  {boolean} $scope.filter.show ( if it should show / hide the filter's form )
+ *  {boolean} $scope.filter.active ( if filter is applying right now )
+ *
+ * @api:
+ *
+ *  - mlFilter : is the query's model name in the current scope that can be already initialized to a certain value
+ *  - name : is the form name
+ *  - applyFilter() : used to submit the filter's form
+ *  - resetFilter() : used to reset the filter
+ *
+ *
+ * Usage example:
+ *
+ *         <form data-ml-filter="query" name="myform" data-ng-submit="applyFilter()" >
+ *
+ *             <input type="text" name="myform[foo]"  value="fooValue" >
+ *             <input type="text" name="myform[bar]"  value="barValue" >
+ *             <a href="" data-ng-click="resetFilter()" > Reset filter </a>
+ *         </form>
+ *
+ *
+ * @depends $stateParams, $state, $location, filterHelper
+ */
+    .directive('mlFilter', ['$state', '$stateParams', '$location', 'filterHelper', function ($state, $stateParams, $location, filterHelper) {
+
+        return {
+
+            link: function ($scope, element, attrs) {
+
+                var queryName = attrs.mlFilter;
+                var formName = attrs.name;
+
+                $scope.filter = {
+                    show: false,
+                    active: false
+                };
+
+                $scope[formName] = {}; // Clears the form
+                $scope[queryName] = filterHelper.searchToQuery();
+
+                // Populate Form's model from query
+                $scope[formName] = $scope[queryName];
+                if (Object.keys($scope[formName]).length > 0) {
+                    $scope.filter.active = true;
+                }
+
+                $scope.applyFilter = function () {
+                    // If the form has not been altered... do nothing.
+                    if ($scope[formName].$dirty === false) {
+                        return;
+                    }
+
+                    var search = filterHelper.formToSearch($scope[formName]);
+                    $location.search(search);
+                    $scope.filter.show = false;
+                    $scope.filter.active = true;
+
+                    $scope.$emit('filterEvent.FILTER_CHANGE', search);
+                };
+
+                $scope.resetFilter = function () {
+                    // Reset
+                    $stateParams.q = null;
+                    $state.go($state.current, $stateParams, {reload: false});
+                    $scope[formName] = {}; // Clears the form
+                    $scope[queryName] = '';
+                    $scope.filter.show = false;
+                    $scope.filter.active = false;
+                };
+            }
+        }
+    }]);
+
 angular.module('ui.atomic.full-screen', ['ui.bootstrap', 'angular-carousel', 'ui.atomic.viewport'])
     .directive('fullScreen', [ '$modal' , 'viewport', function ($modal, viewport) {
 
@@ -418,6 +706,138 @@ angular.module('ui.atomic.mailto', [ ])
             }
         }
     });
+angular.module("ui.atomic.search", ['ui.atomic.pager'])
+
+    /**
+     * Emits a searchEvent.SEARCH_CHANGE with an object that contains the value of the input
+     * Event must be listened on $rootScope as $rootScope.$on('searchEvent.SEARCH_CHANGE', doSomething())
+     */
+    .directive('searchDispatcher', ['$timeout', function($timeout) {
+        return {
+            link: function (scope, element, attrs) {
+
+                var timeoutId;
+                var searchField = attrs.searchField;
+
+                scope.$watch(attrs.ngModel, function (newVal, oldVal) {
+                    if (newVal !== oldVal) {
+                        $timeout.cancel(timeoutId);
+                        timeoutId = $timeout(function () {
+                            onSearchChange(newVal);
+                        }, 1000);
+                    }
+                });
+
+
+                function onSearchChange(value) {
+                    var params = {};
+                    params[searchField] = value;
+                    scope.$emit('searchEvent.SEARCH_CHANGE', value, params);
+                }
+            }
+        };
+    }])
+
+    .directive('searchPager', ['$timeout', '$rootScope', 'Pager', function($timeout, $rootScope, Pager) {
+        return {
+            scope: {
+                searchParams: "@",
+                pager: "=searchPager"
+            },
+            require: 'ngModel',
+            link: function (scope, element, attrs) {
+
+                var timeoutId;
+                scope.$watch(attrs.ngModel, function (newVal, oldVal) {
+
+                    if (newVal !== oldVal) {
+                        $timeout.cancel(timeoutId);
+                        timeoutId = $timeout(function () {
+                            $rootScope.$broadcast('search.change', newVal, scope.$eval(scope.searchParams));
+                        }, 1000);
+                    }
+                });
+
+
+                function onSearchChange(e, search, params) {
+                    search && (params.name = search);
+                    scope.pager = new Pager(scope.pager.url, params);
+                    scope.pager.nextPage();
+                }
+
+                scope.$on('search.change', onSearchChange);
+            }
+        };
+    }])
+
+    .directive('search', ['$timeout', '$rootScope', '$resource', function ($timeout, $rootScope, $resource) {
+
+        return {
+            restrict: 'EA',
+            templateUrl: function (tElem, tAttrs) {
+                return tAttrs.templateUrl || '/tpl/search.html';
+            },
+            scope: {
+                searchParams: "@",
+                searchUrl: "@",
+                class: '@',
+                inputClass: '@',
+                listClass: '@',
+                placeholder: '@',
+                noResultMessage: '@'
+            },
+            replace: true,
+            transclude: true,
+            controller: function ($scope, $rootScope) {
+                $scope.results = [];
+                $scope.search = '';
+                $scope.showNoresult = false;
+
+
+                var params = $scope.$eval($scope.searchParams) || {},
+                    timeoutId;
+
+                $scope.$watch('search', function (newVal, oldVal) {
+                    if (newVal !== oldVal) {
+                        $timeout.cancel(timeoutId);
+                        timeoutId = $timeout(function () {
+                            $scope.$emit('search.change', newVal, params);
+                        }, 500);
+                    }
+                    if (!newVal) {
+                        $scope.showNoresult = false;
+                        $scope.results = [];
+                    }
+                });
+
+                function onSearchChange(e, search, params) {
+                    if (search) {
+                        params.name = search;
+                        $resource($scope.searchUrl, params).get(function (response) {
+                            $scope.results = response.results;
+                            $scope.showNoresult = ($scope.results.length === 0);
+                        });
+                    }
+                }
+
+                $rootScope.$on('search.change', onSearchChange);
+
+            }
+        };
+    }])
+
+    .directive('searchItem', function factory() {
+        return {
+            restrict: 'EA',
+            templateUrl: '/tpl/search/item.html',
+            require: '^search',
+            replace: true
+        };
+    })
+
+;
+
+
 angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstrap'])
     .config(['$analyticsProvider', function ($analyticsProvider) {
         var lastVisitedPage = '/';
@@ -591,109 +1011,42 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
         $scope.buttons = model.buttons;
     }])
 ;
-angular.module('ui.atomic.tools', [])
-    .factory('urlTools', function () {
+angular.module('ui.atomic.user-advice', [])
+    .directive('userAdvice', ['$http, $document, $rootScope', function ($http, $document, $rootScope) {
 
-        function toKeyValue(obj, prefix) {
-            var str = [];
-            for (var p in obj) {
-                var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
-                str.push(typeof v == "object" ?
-                    toKeyValue(v, k) :
-                    encodeURIComponent(k) + "=" + encodeURIComponent(v));
-            }
-            return str.join("&");
-        }
+        return {
+            link: function (scope, element, attrs) {
 
-        /**
-         * Tries to decode the URI component without throwing an exception.
-         *
-         * @private
-         * @param str value potential URI component to check.
-         * @returns {boolean} True if `value` can be decoded
-         * with the decodeURIComponent function.
-         */
-        function tryDecodeURIComponent(value) {
-            try {
-                return decodeURIComponent(value);
-            } catch (e) {
-                // Ignore any invalid uri component
-            }
-        }
+                var advice_slug = attrs.userAdvice,
+                    disableUrl = '/api/advices/' + advice_slug + '/disable',
+                    disableAdvice = function () {
 
-
-        /**
-         * Parses an escaped url query string into key-value pairs.
-         * @returns Object.<(string|boolean)>
-         */
-        function parseKeyValue(/**string*/keyValue) {
-            var obj = {}, key_value, key;
-            angular.forEach((keyValue || "").split('&'), function (keyValue) {
-                if (keyValue) {
-                    key_value = keyValue.split('=');
-                    key = tryDecodeURIComponent(key_value[0]);
-                    if (angular.isDefined(key)) {
-                        var val = angular.isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
-                        if (!obj[key]) {
-                            obj[key] = val;
-                        } else if (isArray(obj[key])) {
-                            obj[key].push(val);
-                        } else {
-                            obj[key] = [obj[key], val];
-                        }
+                        scope.$apply(function () {
+                                $http.get(disableUrl);
+                                $document.find('.advice-' + advice_slug).remove();
+                                $rootScope.$broadcast('advice.disable', advice_slug);
+                            }
+                        );
                     }
+
+                element.bind('click', disableAdvice);
+            }
+
+        }
+    }])
+;
+angular.module('ui.atomic.whatsapp', [ 'adaptive.detection' ])
+    .directive('whatsapp', ['$window', '$detection', '$rootScope', function($window, $detection, $rootScope) {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                if($detection.isiOS()) {
+                    element.bind("click", function() {
+                        $window.location = "whatsapp://send?text="+encodeURIComponent(attrs.whatsapp);
+                    });
+                } else {
+                    element.hide();
                 }
-            });
-            return obj;
+            }
         }
-
-        return {
-            'toKeyValue': toKeyValue,
-            'parseKeyValue': parseKeyValue
-        };
-    });
-
-angular.module('ui.atomic.viewport', [])
-    .factory('viewport', function () {
-
-        var viewPort = getViewPort();
-
-        function getViewPort() {
-            var viewPortContent = angular.element('meta[name="viewport"]').attr('content')
-
-            return parseViewPortContent(viewPortContent);
-        }
-
-
-        function parseViewPortContent(viewPortContent) {
-            var obj = {};
-            var viewPortContentArray = viewPortContent.replace(/ /g, '').split(',');
-            angular.forEach(viewPortContentArray, function (part) {
-                var parts = part.split('=');
-                this[parts[0]] = parts[1];
-            }, obj);
-
-            return obj;
-        }
-
-        function serializeViewPortContent(obj) {
-            var parts = [];
-            angular.forEach(obj, function (value, key) {
-                parts.push(key + '=' + value);
-            });
-
-            return parts.join(',');
-        }
-
-        function setViewPort(key, value) {
-            viewPort[key] = value;
-
-            var serializedViewPort = serializeViewPortContent(viewPort);
-            angular.element('meta[name="viewport"]').attr('content', serializedViewPort)
-        }
-
-        return {
-            'get': getViewPort,
-            'set': setViewPort
-        }
-    });
+    }]);
