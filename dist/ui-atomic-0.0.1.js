@@ -22,19 +22,13 @@ angular.module('ui.atomic.alerts', [ "ui.bootstrap.alert"])
             }, 3500);
         };
 
+        /**
+         * Listeners
+         */
         $rootScope.$on('submit.error', function (event, form) {
             addAlert({ type: 'danger', msg: 'alerts.form.validationMessage', keep: false });
         });
 
-        // When you want to emit an alert, include the following alert object:
-        /* 
-         * { 
-         *    type : 'danger', // info, warning, success
-         *    msg: 'My message for the alert'
-         *  }
-         *
-         *
-         * */
         $rootScope.$on('alert.show', function (event, alert) {
             addAlert(alert);
         });
