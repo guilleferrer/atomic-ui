@@ -1,0 +1,21 @@
+<div class="modal-header">
+    {{ modalHeader }}
+    <button class="btn btn-link pull-right" data-ng-click="cancel()"><i class="ml-icon-30"></i></button>
+</div>
+<div class="modal-body">
+    <div class="list-group decorated w-check">
+        <a class="list-group-item" ng-repeat="choice in choices"
+           ng-click="choice.selected = !choice.selected" ng-class="{ true: 'active' }[choice.selected]">
+            <p class="list-group-item-text" ng-bind="choice.name"></p>
+        </a>
+    </div>
+</div>
+<div class="modal-footer">
+    <ul class="buttons-holder">
+        <li>
+            <button class="btn btn-block btn-primary" ng-click="ok()">
+                {{ modalFooter }}
+            </button>
+        </li>
+    </ul>
+</div>
