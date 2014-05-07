@@ -838,9 +838,18 @@ angular.module('ui.atomic.multiple-choice', ['ui.bootstrap', 'ui.atomic.ng-name'
             templateUrl: 'template/multiple-choice/multiple-choice-picker.html',
             link: function (scope, element) {
 
+                scope.selectToggle = function (option) {
+                    option.selected = !option.selected;
+                }
+
+                scope.select = function (option) {
+                    option.selected = true;
+                }
+
                 element.on('click', function openModal() {
                         // store the initial selection in case the user closes the modal and dismissed the changes he made
                         var initialSelection = scope.ngModel;
+                        angular.forEach(scope.ngModel, scope.select);
 
                         // Create modal
                         scope.$modal = $modal.open({
@@ -1270,7 +1279,7 @@ angular.module("template/multiple-choice/multiple-choice-modal.html", []).run(["
     "<div class=\"modal-body\">\n" +
     "    <div class=\"list-group decorated w-check\">\n" +
     "        <a class=\"list-group-item\" ng-repeat=\"choice in choices\"\n" +
-    "           ng-click=\"choice.selected = !choice.selected\" ng-class=\"{ true: 'active' }[choice.selected]\">\n" +
+    "           ng-click=\"selectToggle(choice)\" ng-class=\"{ true: 'active' }[choice.selected]\">\n" +
     "            <p class=\"list-group-item-text\" ng-bind=\"choice.name\"></p>\n" +
     "        </a>\n" +
     "    </div>\n" +

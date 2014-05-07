@@ -5,7 +5,7 @@
 <div class="modal-body">
     <div class="list-group decorated w-check">
         <a class="list-group-item" ng-repeat="choice in choices"
-           ng-click="choice.selected = !choice.selected" ng-class="{ true: 'active' }[choice.selected]">
+           ng-click="selectToggle(choice)" ng-class="{ true: 'active' }[choice.selected]">
             <p class="list-group-item-text" ng-bind="choice.name"></p>
         </a>
     </div>
