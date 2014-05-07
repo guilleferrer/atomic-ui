@@ -3,9 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="fragment" content="!"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Atomic UI Components Testabit</title>
-    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Confirm, Filter, Full-screen, List, Mailto, Nl2br, Search-box, Testabit, Truncate, Urlencode, Whatsapp, ">
+    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Confirm, Filter, Full-screen, List, Mailto, Multiple-choice, Nl2br, Search-box, Testabit, Truncate, Urlencode, Whatsapp, ">
     <meta name="google-site-verification" content="7lc5HyceLDqpV_6oNHteYFfxDJH7-S3DwnJKtNUKcRg"/>
     <!--<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/0.6.7/fastclick.min.js"></script>-->
     <!--<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>-->
@@ -68,6 +69,8 @@
                             <li><a href="#list">List</a></li>
                             
                             <li><a href="#mailto">Mailto</a></li>
+                            
+                            <li><a href="#multiple-choice">Multiple-choice</a></li>
                             
                             <li><a href="#nl2br">Nl2br</a></li>
                             
@@ -139,6 +142,8 @@
                         <li><a href="#list">List</a></li>
                         
                         <li><a href="#mailto">Mailto</a></li>
+                        
+                        <li><a href="#multiple-choice">Multiple-choice</a></li>
                         
                         <li><a href="#nl2br">Nl2br</a></li>
                         
@@ -670,6 +675,121 @@ The pictures shown in the carousel are those defined in the array <em>images</em
                 </section>
                 <script>function MailtoDemoCtrl() {
 
+}</script>
+                
+                <section id="multiple-choice">
+                    <div class="page-header">
+                        <h1>Multiple-choice
+                            <small>
+                                (ui.atomic.multiple-choice)
+                            </small>
+                        </h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 show-grid">
+                            <div ng-controller="MultipleChoiceDemoCtrl">
+    <multiple-choice choices="colors" ng-model="selection" data-modal-header="Select one of this colors"
+                     data-modal-footer="OK">
+        <img src="http://www.lorempixel.com/40/40" alt="Pick a color"/>Select your favorite colors
+    </multiple-choice>
+    <div class="well">
+        Selected choices:
+        <ul>
+            <li ng-repeat="s in selection">{{ s.name }}</li>
+        </ul>
+    </div>
+</div>
+                        </div>
+                        <div class="col-md-6">
+                            <p>Multiple Choice opens a modal containing a list of options that can be checked/unchecked and stores the
+selected options when it is closed. If the modal is dismissed, the previous selection is restored and new changes in
+the selection are ignored</p>
+
+<p><strong>API</strong></p>
+
+<ul>
+<li>choices: {array} Array of objects with all possible choices</li>
+<li>ngModel: {expression} variable where the selected options are going to be assigned to</li>
+<li>modalFooter: {string} Text in the footer of the modal. Defaults to OK.</li>
+<li>modalHeader: {string} Text in the header of the modal.</li>
+</ul>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row code">
+                        <div class="col-md-12" >
+                            <tabset>
+                                <tab heading="Markup">
+                                    <div plunker-content="markup">
+                                        <pre ng-non-bindable><code data-language="html">&lt;div ng-controller=&quot;MultipleChoiceDemoCtrl&quot;&gt;
+    &lt;multiple-choice choices=&quot;colors&quot; ng-model=&quot;selection&quot; data-modal-header=&quot;Select one of this colors&quot;
+                     data-modal-footer=&quot;OK&quot;&gt;
+        &lt;img src=&quot;http://www.lorempixel.com/40/40&quot; alt=&quot;Pick a color&quot;/&gt;Select your favorite colors
+    &lt;/multiple-choice&gt;
+    &lt;div class=&quot;well&quot;&gt;
+        Selected choices:
+        &lt;ul&gt;
+            &lt;li ng-repeat=&quot;s in selection&quot;&gt;{{ s.name }}&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                                    </div>
+                                </tab>
+                                <tab heading="JavaScript">
+                                    <div plunker-content="javascript">
+                                        <pre ng-non-bindable><code data-language="javascript">function MultipleChoiceDemoCtrl($scope) {
+    $scope.colors = [
+        {
+            name: &quot;violet&quot;
+        },
+        {
+            name: &quot;orange&quot;
+        },
+        {
+            name: &quot;green&quot;
+        },
+        {
+            name: &quot;yellow&quot;
+        },
+        {
+            name: &quot;cyan&quot;
+        },
+        {
+            name: &quot;red&quot;
+        }
+    ];
+
+    $scope.selection = [ $scope.colors[0], $scope.colors[1]];
+}</code></pre>
+                                    </div>
+                                </tab>
+                            </tabset>
+                        </div>
+                    </div>
+                </section>
+                <script>function MultipleChoiceDemoCtrl($scope) {
+    $scope.colors = [
+        {
+            name: "violet"
+        },
+        {
+            name: "orange"
+        },
+        {
+            name: "green"
+        },
+        {
+            name: "yellow"
+        },
+        {
+            name: "cyan"
+        },
+        {
+            name: "red"
+        }
+    ];
+
+    $scope.selection = [ $scope.colors[0], $scope.colors[1]];
 }</script>
                 
                 <section id="nl2br">
@@ -1256,6 +1376,32 @@ it is hidden, try openning this page with an iOS device )</p>
             
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.ng-name}"
+                        ng-model="module.ng-name"
+                        btn-checkbox
+                        ng-change="selectedChanged('ng-name', module.ng-name)">
+                    Ng-name
+                </button>
+                
+            
+            
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.multiple-choice}"
+                        ng-model="module.multiple-choice"
+                        btn-checkbox
+                        ng-change="selectedChanged('multiple-choice', module.multiple-choice)">
+                    Multiple-choice
+                </button>
+                
+            </div>
+            
+            
+            
+            <div class="btn-group" style="width: 100%;">
+                
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.nl2br}"
                         ng-model="module.nl2br"
                         btn-checkbox
@@ -1274,12 +1420,8 @@ it is hidden, try openning this page with an iOS device )</p>
                     Search-box
                 </button>
                 
-            </div>
             
             
-            
-            <div class="btn-group" style="width: 100%;">
-                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.testabit}"
@@ -1289,8 +1431,12 @@ it is hidden, try openning this page with an iOS device )</p>
                     Testabit
                 </button>
                 
+            </div>
             
             
+            
+            <div class="btn-group" style="width: 100%;">
+                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.truncate}"
@@ -1311,12 +1457,8 @@ it is hidden, try openning this page with an iOS device )</p>
                     Urlencode
                 </button>
                 
-            </div>
             
             
-            
-            <div class="btn-group" style="width: 100%;">
-                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.user-advice}"
@@ -1326,8 +1468,12 @@ it is hidden, try openning this page with an iOS device )</p>
                     User-advice
                 </button>
                 
+            </div>
             
             
+            
+            <div class="btn-group" style="width: 100%;">
+                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.whatsapp}"

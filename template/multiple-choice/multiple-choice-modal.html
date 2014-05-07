@@ -1,6 +1,6 @@
 <div class="modal-header">
     {{ modalHeader }}
-    <button class="btn btn-link pull-right" data-ng-click="cancel()"><i class="ml-icon-30"></i></button>
+    <button class="btn btn-link pull-right" data-ng-click="$modal.dismiss('cancel')"><i class="ml-icon-30"></i></button>
 </div>
 <div class="modal-body">
     <div class="list-group decorated w-check">
@@ -13,7 +13,7 @@
 <div class="modal-footer">
     <ul class="buttons-holder">
         <li>
-            <button class="btn btn-block btn-primary" ng-click="ok()">
+            <button class="btn btn-block btn-primary" ng-click="$modal.close()">
                 {{ modalFooter }}
             </button>
         </li>

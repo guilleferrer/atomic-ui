@@ -1,6 +1,12 @@
 <div ng-controller="MultipleChoiceDemoCtrl">
-    <multiple-choice choices="colors" ng-model="myform.colors">
-        <button> Select your favorite colors</button>
+    <multiple-choice choices="colors" ng-model="selection" data-modal-header="Select one of this colors"
+                     data-modal-footer="OK">
+        <img src="http://www.lorempixel.com/40/40" alt="Pick a color"/>Select your favorite colors
     </multiple-choice>
-    <pre>{{ myform.colors }}</pre>
+    <div class="well">
+        Selected choices:
+        <ul>
+            <li ng-repeat="s in selection">{{ s.name }}</li>
+        </ul>
+    </div>
 </div>

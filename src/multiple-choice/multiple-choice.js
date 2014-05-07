@@ -6,75 +6,31 @@ angular.module('ui.atomic.multiple-choice', ['ui.bootstrap', 'ui.atomic.ng-name'
             scope: {
                 choices: '=',
                 ngModel: '=',
-                modalFooter: '@',
-                modalHeader: '@'
-
+                modalHeader: '@',
+                modalFooter: '@'
             },
-            replace: true,
             transclude: true,
             templateUrl: 'template/multiple-choice/multiple-choice-picker.html',
-            link: function (scope, element, attrs) {
+            link: function (scope, element) {
 
-                var modalInstance, initialSelection;
+                element.on('click', function openModal() {
+                        // store the initial selection in case the user closes the modal and dismissed the changes he made
+                        var initialSelection = scope.ngModel;
 
-                scope.$watch('choices', function () {
-                    if (scope.choices) {
-                        // Initialize the form with the selection choices
-                        initialSelection = $filter('filter')(scope.choices, { selected: true });
-                        applySelection(initialSelection);
+                        // Create modal
+                        scope.$modal = $modal.open({
+                            windowClass: 'full-modal',
+                            templateUrl: 'template/multiple-choice/multiple-choice-modal.html',
+                            scope: scope
+                        });
+
+                        scope.$modal.result.then(function () {
+                            scope.ngModel = $filter('filter')(scope.choices, { selected: true });
+                        }, function () {
+                            scope.ngModel = initialSelection
+                        });
                     }
-                });
-
-                function applySelection(selectedChoices) {
-                    scope.ngModel = selectedChoices;
-                }
-
-                function dismissModal() {
-                    applySelection(initialSelection);
-                }
-
-                function openModal() {
-
-                    // Create modal
-                    modalInstance = $modal.open({
-                        windowClass: 'full-modal',
-                        templateUrl: 'template/multiple-choice/multiple-choice-modal.html',
-                        controller: 'MultipleChoiceModalCtrl',
-                        resolve: {
-                            choices: function () {
-                                return scope.choices;
-                            },
-                            modalHeader: function () {
-                                return scope.modalHeader;
-                            },
-                            modalFooter: function () {
-                                return scope.modalFooter;
-                            }
-                        }
-                    });
-
-
-                    modalInstance.result.then(applySelection, dismissModal);
-                }
-
-                element.on('click', openModal);
+                );
             }
-
         }
-    }])
-    .controller('MultipleChoiceModalCtrl', [ '$scope', '$modalInstance', '$filter', 'choices' , 'modalHeader', 'modalFooter', function ($scope, $modalInstance, $filter, choices, modalHeader, modalFooter) {
-
-        $scope.choices = choices;
-        $scope.modalHeader = modalHeader;
-        $scope.modalFooter = modalFooter || 'OK';
-
-        $scope.ok = function () {
-            var selectedChoices = $filter('filter')($scope.choices, { selected: true });
-            $modalInstance.close(selectedChoices);
-        };
-
-        $scope.cancel = function () {
-            // Only set as selected those which are really selected
-            $modalInstance.dismiss('cancel');
-        };
     }]);

@@ -4,8 +4,8 @@
  * License: EULA
  * Author: Guillermo Ferrer <guilleferrer@gmail.com>
  */
-angular.module("ui.atomic", [ "pascalprecht.translate", "ui.atomic.tpls", "ui.atomic.alerts","ui.atomic.back","ui.atomic.compile","ui.atomic.confirm","ui.atomic.fbinvite","ui.atomic.tools","ui.atomic.filter","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.nl2br","ui.atomic.search-box","ui.atomic.testabit","ui.atomic.truncate","ui.atomic.urlencode","ui.atomic.user-advice","ui.atomic.whatsapp"]);
-angular.module("ui.atomic.tpls", ["template/confirm/confirm.html","template/full-screen/full-screen.html","template/list/list-item.html","template/list/paged-list.html","template/search-box/search-box.html","template/testabit/modal.html"]);
+angular.module("ui.atomic", [ "pascalprecht.translate", "ui.atomic.tpls", "ui.atomic.alerts","ui.atomic.back","ui.atomic.compile","ui.atomic.confirm","ui.atomic.fbinvite","ui.atomic.tools","ui.atomic.filter","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.ng-name","ui.atomic.multiple-choice","ui.atomic.nl2br","ui.atomic.search-box","ui.atomic.testabit","ui.atomic.truncate","ui.atomic.urlencode","ui.atomic.user-advice","ui.atomic.whatsapp"]);
+angular.module("ui.atomic.tpls", ["template/confirm/confirm.html","template/full-screen/full-screen.html","template/list/list-item.html","template/list/paged-list.html","template/multiple-choice/multiple-choice-modal.html","template/multiple-choice/multiple-choice-picker.html","template/search-box/search-box.html","template/testabit/modal.html"]);
 angular.module('ui.atomic.alerts', [ "ui.bootstrap.alert"])
     .run([ '$rootScope', '$timeout', function ($rootScope, $timeout) {
         // Global alerts Initialization
@@ -711,6 +711,154 @@ angular.module('ui.atomic.mailto', [ ])
             }
         }
     });
+/**
+ * @ngdoc directive
+ * @name ngName
+ *
+ * @priority 100
+ *
+ * @description
+ * The `ng-name` directive allows you the ability to evaluate scope expressions on the name attribute.
+ * This directive does not react to the scope expression. It merely evaluates the expression, and sets the
+ * {@link ngModel.NgModelController NgModelController}'s `$name` property and the `<input>` element's
+ * `name` attribute.
+ *
+ * <div class="alert alert-info">
+ *   This is particularly useful when building forms while looping through data with `ng-repeat`,
+ *   allowing you evaluate expressions such as as control names.
+ * </div>
+ *
+ * <div class="alert alert-warning">
+ *   This is <strong>NOT</strong> a data binding, in the sense that the attribute is not observed nor is the scope
+ *   expression watched. The ngName directive's link function runs after the ngModelController but before ngModel's
+ *   link function. This allows the evaluated result to be updated to the $name property prior to the
+ *   {@link form.FormController FormController}'s `$addControl` function being called.
+ * </div>
+ *
+ * @element input
+ * @param {expression} ngName {@link guide/expression Expression} to evaluate.
+ *
+ * @example
+ <example name="ngName-directive">
+ <file name="index.html">
+ <div ng-controller="Ctrl">
+ <form name="candyForm">
+ <h2>Enter the amount of candy you want.</h2>
+ <div ng-repeat="c in candy">
+ <label for="{{ c.type }}">{{ c.type }}</label>
+ <input type="text"
+ ng-model="c.qty"
+ ng-name="c.type + 'Qty'"
+ id="{{ c.type }}"
+ ng-pattern="/^([1-9][0-9]*|0)$/"
+ required>
+ </div>
+ </form>
+ <br>
+ <div ng-repeat="c in candy">
+ <div><b>{{ c.type }}</b></div>
+ <div>candyForm.{{ c.type + 'Qty' }}.$valid = <b ng-bind="candyForm.{{ c.type + 'Qty' }}.$valid"></b></div>
+ <div>Quantity = <b>{{ c.qty }}</b></div>
+ <br>
+ </div>
+ </div>
+ </file>
+ <file name="script.js">
+ function Ctrl($scope) {
+        $scope.candy = [
+          {
+            type: 'chocolates',
+            qty: null
+          },
+          {
+            type: 'peppermints',
+            qty: null
+          },
+          {
+            type: 'lollipops',
+            qty: null
+          }
+        ];
+      }
+ </file>
+ <file name="protractor.js" type="protractor">
+ var chocolatesInput = element(by.id('chocolates'));
+ var chocolatesValid = element(by.binding('candyForm.chocolatesQty.$valid'));
+ var peppermintsInput = element(by.id('peppermints'));
+ var peppermintsValid = element(by.binding('candyForm.peppermintsQty.$valid'));
+ var lollipopsInput = element(by.id('lollipops'));
+ var lollipopsValid = element(by.binding('candyForm.lollipopsQty.$valid'));
+
+ it('should initialize controls properly', function() {
+        expect(chocolatesValid.getText()).toBe('false');
+        expect(peppermintsValid.getText()).toBe('false');
+        expect(lollipopsValid.getText()).toBe('false');
+      });
+
+ it('should be valid when entering n >= 0', function() {
+        chocolatesInput.sendKeys('5');
+        peppermintsInput.sendKeys('55');
+        lollipopsInput.sendKeys('555');
+
+        expect(chocolatesValid.getText()).toBe('true');
+        expect(peppermintsValid.getText()).toBe('true');
+        expect(lollipopsValid.getText()).toBe('true');
+      });
+ </file>
+ </example>
+ */
+angular.module('ui.atomic.ng-name', [])
+    .directive('ngName', ngNameDirective = function () {
+        return {
+            priority: 100,
+            restrict: 'A',
+            require: 'ngModel',
+            link: {
+                pre: function ngNameLinkFn(scope, elem, attrs, ctrl) {
+                    if (!ctrl) throw 'Error , ngName requires ngModel';
+                    ctrl.$name = scope.$eval(attrs.ngName);
+                    attrs.$set('name', ctrl.$name);
+                }
+            }
+        }
+    })
+;
+angular.module('ui.atomic.multiple-choice', ['ui.bootstrap', 'ui.atomic.ng-name'])
+    .directive('multipleChoice', [ '$modal', '$log', '$filter', function ($modal, $log, $filter) {
+
+        return {
+            restrict: 'E',
+            scope: {
+                choices: '=',
+                ngModel: '=',
+                modalHeader: '@',
+                modalFooter: '@'
+            },
+            transclude: true,
+            templateUrl: 'template/multiple-choice/multiple-choice-picker.html',
+            link: function (scope, element) {
+
+                element.on('click', function openModal() {
+                        // store the initial selection in case the user closes the modal and dismissed the changes he made
+                        var initialSelection = scope.ngModel;
+
+                        // Create modal
+                        scope.$modal = $modal.open({
+                            windowClass: 'full-modal',
+                            templateUrl: 'template/multiple-choice/multiple-choice-modal.html',
+                            scope: scope
+                        });
+
+                        scope.$modal.result.then(function () {
+                            scope.ngModel = $filter('filter')(scope.choices, { selected: true });
+                        }, function () {
+                            scope.ngModel = initialSelection
+                        });
+                    }
+                );
+            }
+        }
+    }]);
 angular.module('ui.atomic.nl2br', [])
     .filter('nl2br', [function () {
         return function (text, is_xhtml) {
@@ -1039,6 +1187,40 @@ angular.module("template/confirm/confirm.html", []).run(["$templateCache", funct
     "</div>");
 }]);
 
+angular.module("template/filter/button.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/filter/button.html",
+    "<a class=\"btn btn-icon\" data-ng-click=\"onFilterButtonClick()\">\n" +
+    "    <i class=\"ml-icon-65\"></i>\n" +
+    "</a>");
+}]);
+
+angular.module("template/filter/modal.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/filter/modal.html",
+    "<div class=\"modal-header\">\n" +
+    "    {{ title }}\n" +
+    "    <button class=\"btn btn-link pull-right\" data-ng-click=\"close()\"><i class=\"ml-icon-30\"></i></button>\n" +
+    "</div>\n" +
+    "<div data-modal-filter-form\n" +
+    "\n" +
+    "     class=\"modal-body\"\n" +
+    "     data-form-name=\"formName\">\n" +
+    "</div>\n" +
+    "<div class=\"modal-footer\">\n" +
+    "    <ul class=\"buttons-holder btn-btn\">\n" +
+    "        <li>\n" +
+    "            <button type=\"button\" data-ng-click=\"resetFilter()\" class=\"btn btn-block\">\n" +
+    "                {{ resetLabel }}\n" +
+    "            </button>\n" +
+    "        </li>\n" +
+    "        <li>\n" +
+    "            <button type=\"button\" data-ng-click=\"applyFilter()\" class=\"btn btn-block btn-primary\">\n" +
+    "                {{ applyLabel }}\n" +
+    "            </button>\n" +
+    "        </li>\n" +
+    "    </ul>\n" +
+    "</div>");
+}]);
+
 angular.module("template/full-screen/full-screen.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/full-screen/full-screen.html",
     "<button class=\"btn btn-link pull-right\" data-ng-click=\"cancel()\"><i class=\"ml-icon-30\"></i></button>\n" +
@@ -1076,6 +1258,41 @@ angular.module("template/list/paged-list.html", []).run(["$templateCache", funct
     "    <span id=\"spinner-mini\" data-us-spinner=\"{lines: 13, length: 0, width: 5, radius: 14, corners: 1, rotate: 0,\n" +
     "    direction: 1, color: '#000', speed: 1.7, trail: 100, shadow: false, hwaccel: false, className: 'spinner', zIndex:\n" +
     "    2e9, top: 'auto', left: 'auto' }\"></span>\n" +
+    "</div>");
+}]);
+
+angular.module("template/multiple-choice/multiple-choice-modal.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/multiple-choice/multiple-choice-modal.html",
+    "<div class=\"modal-header\">\n" +
+    "    {{ modalHeader }}\n" +
+    "    <button class=\"btn btn-link pull-right\" data-ng-click=\"$modal.dismiss('cancel')\"><i class=\"ml-icon-30\"></i></button>\n" +
+    "</div>\n" +
+    "<div class=\"modal-body\">\n" +
+    "    <div class=\"list-group decorated w-check\">\n" +
+    "        <a class=\"list-group-item\" ng-repeat=\"choice in choices\"\n" +
+    "           ng-click=\"choice.selected = !choice.selected\" ng-class=\"{ true: 'active' }[choice.selected]\">\n" +
+    "            <p class=\"list-group-item-text\" ng-bind=\"choice.name\"></p>\n" +
+    "        </a>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "<div class=\"modal-footer\">\n" +
+    "    <ul class=\"buttons-holder\">\n" +
+    "        <li>\n" +
+    "            <button class=\"btn btn-block btn-primary\" ng-click=\"$modal.close()\">\n" +
+    "                {{ modalFooter }}\n" +
+    "            </button>\n" +
+    "        </li>\n" +
+    "    </ul>\n" +
+    "</div>");
+}]);
+
+angular.module("template/multiple-choice/multiple-choice-picker.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/multiple-choice/multiple-choice-picker.html",
+    "<div>\n" +
+    "    <div ng-transclude=\"\"></div>\n" +
+    "    <select multiple class=\"hidden\" ng-model=\"ngModel\"\n" +
+    "            ng-options=\"c.name for c in choices\">\n" +
+    "    </select>\n" +
     "</div>");
 }]);
 

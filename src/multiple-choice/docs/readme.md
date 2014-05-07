@@ -3,9 +3,8 @@ selected options when it is closed. If the modal is dismissed, the previous sele
 the selection are ignored
 
 **API**
- - choices: {array} Array of objects with all possible choices. If the choices has "selected: true" then the choice will
-            be marked as checked;
- - ngModel: '=',
 
+ - choices: {array} Array of objects with all possible choices
+ - ngModel: {expression} variable where the selected options are going to be assigned to
  - modalFooter: {string} Text in the footer of the modal. Defaults to OK.
  - modalHeader: {string} Text in the header of the modal.

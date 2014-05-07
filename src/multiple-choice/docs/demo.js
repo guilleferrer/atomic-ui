@@ -1,7 +1,7 @@
 function MultipleChoiceDemoCtrl($scope) {
     $scope.colors = [
         {
-            name: "blue"
+            name: "violet"
         },
         {
             name: "orange"
@@ -11,7 +11,14 @@ function MultipleChoiceDemoCtrl($scope) {
         },
         {
             name: "yellow"
+        },
+        {
+            name: "cyan"
+        },
+        {
+            name: "red"
         }
     ];
-    $scope.fullName = "myform[multiple-choice]";
+
+    $scope.selection = [ $scope.colors[0], $scope.colors[1]];
 }

@@ -1,8 +1,6 @@
 <div>
     <div ng-transclude=""></div>
-    <select multiple
-            class="hidden"
-            ng-model="form[fieldName]"
-            ng-options="c.name for c in choices track by c.id">
+    <select multiple class="hidden" ng-model="ngModel"
+            ng-options="c.name for c in choices">
     </select>
 </div>
