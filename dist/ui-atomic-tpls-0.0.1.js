@@ -1056,12 +1056,12 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
                         {
                             label: 'testabit.button.no',
                             result: 0,
-                            cssClass: 'btn-ml-default'
+                            cssClass: 'btn-default'
                         },
                         {
                             label: 'testabit.button.yes',
                             result: 1,
-                            cssClass: 'btn-ml-primary'
+                            cssClass: 'btn-primary'
                         }
                     ];
 
