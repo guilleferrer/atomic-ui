@@ -4,8 +4,8 @@
  * License: EULA
  * Author: Guillermo Ferrer <guilleferrer@gmail.com>
  */
-angular.module("ui.atomic", [ "pascalprecht.translate", "ui.atomic.tpls", "ui.atomic.alerts","ui.atomic.back","ui.atomic.compile","ui.atomic.confirm","ui.atomic.fbinvite","ui.atomic.tools","ui.atomic.filter","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.nl2br","ui.atomic.search","ui.atomic.testabit","ui.atomic.truncate","ui.atomic.urlencode","ui.atomic.user-advice","ui.atomic.whatsapp"]);
-angular.module("ui.atomic.tpls", ["template/confirm/confirm.html","template/full-screen/full-screen.html","template/list/list-item.html","template/list/paged-list.html","template/testabit/modal.html"]);
+angular.module("ui.atomic", [ "pascalprecht.translate", "ui.atomic.tpls", "ui.atomic.alerts","ui.atomic.back","ui.atomic.compile","ui.atomic.confirm","ui.atomic.fbinvite","ui.atomic.tools","ui.atomic.filter","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.nl2br","ui.atomic.search-box","ui.atomic.testabit","ui.atomic.truncate","ui.atomic.urlencode","ui.atomic.user-advice","ui.atomic.whatsapp"]);
+angular.module("ui.atomic.tpls", ["template/confirm/confirm.html","template/full-screen/full-screen.html","template/list/list-item.html","template/list/paged-list.html","template/search-box/search-box.html","template/testabit/modal.html"]);
 angular.module('ui.atomic.alerts', [ "ui.bootstrap.alert"])
     .run([ '$rootScope', '$timeout', function ($rootScope, $timeout) {
         // Global alerts Initialization
@@ -724,20 +724,23 @@ angular.module('ui.atomic.nl2br', [])
         }
     }]
     );
-angular.module("ui.atomic.search", ['ui.atomic.pager'])
-
-    /**
-     * Emits a searchEvent.SEARCH_CHANGE with an object that contains the value of the input
-     * Event must be listened on $rootScope as $rootScope.$on('searchEvent.SEARCH_CHANGE', doSomething())
-     */
-    .directive('searchDispatcher', ['$timeout', function($timeout) {
+angular.module('ui.atomic.search-box', [])
+    .directive('searchBox', [ '$timeout', function factory($timeout) {
         return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: 'template/search-box/search-box.html',
+            scope: {
+                placeholder: '@'
+            },
             link: function (scope, element, attrs) {
-
                 var timeoutId;
-                var searchField = attrs.searchField;
 
-                scope.$watch(attrs.ngModel, function (newVal, oldVal) {
+                scope.erase = function () {
+                    scope.search = '';
+                }
+
+                scope.$watch('search', function (newVal, oldVal) {
                     if (newVal !== oldVal) {
                         $timeout.cancel(timeoutId);
                         timeoutId = $timeout(function () {
@@ -746,116 +749,15 @@ angular.module("ui.atomic.search", ['ui.atomic.pager'])
                     }
                 });
 
-
                 function onSearchChange(value) {
-                    var params = {};
-                    params[searchField] = value;
-                    scope.$emit('searchEvent.SEARCH_CHANGE', value, params);
+                    if (value != '') {
+                        scope.$emit('searchEvent.SEARCH_CHANGE', value);
+                    }
+
                 }
             }
         };
-    }])
-
-    .directive('searchPager', ['$timeout', '$rootScope', 'Pager', function($timeout, $rootScope, Pager) {
-        return {
-            scope: {
-                searchParams: "@",
-                pager: "=searchPager"
-            },
-            require: 'ngModel',
-            link: function (scope, element, attrs) {
-
-                var timeoutId;
-                scope.$watch(attrs.ngModel, function (newVal, oldVal) {
-
-                    if (newVal !== oldVal) {
-                        $timeout.cancel(timeoutId);
-                        timeoutId = $timeout(function () {
-                            $rootScope.$broadcast('search.change', newVal, scope.$eval(scope.searchParams));
-                        }, 1000);
-                    }
-                });
-
-
-                function onSearchChange(e, search, params) {
-                    search && (params.name = search);
-                    scope.pager = new Pager(scope.pager.url, params);
-                    scope.pager.nextPage();
-                }
-
-                scope.$on('search.change', onSearchChange);
-            }
-        };
-    }])
-
-    .directive('search', ['$timeout', '$rootScope', '$resource', function ($timeout, $rootScope, $resource) {
-
-        return {
-            restrict: 'EA',
-            templateUrl: function (tElem, tAttrs) {
-                return tAttrs.templateUrl || '/tpl/search.html';
-            },
-            scope: {
-                searchParams: "@",
-                searchUrl: "@",
-                class: '@',
-                inputClass: '@',
-                listClass: '@',
-                placeholder: '@',
-                noResultMessage: '@'
-            },
-            replace: true,
-            transclude: true,
-            controller: function ($scope, $rootScope) {
-                $scope.results = [];
-                $scope.search = '';
-                $scope.showNoresult = false;
-
-
-                var params = $scope.$eval($scope.searchParams) || {},
-                    timeoutId;
-
-                $scope.$watch('search', function (newVal, oldVal) {
-                    if (newVal !== oldVal) {
-                        $timeout.cancel(timeoutId);
-                        timeoutId = $timeout(function () {
-                            $scope.$emit('search.change', newVal, params);
-                        }, 500);
-                    }
-                    if (!newVal) {
-                        $scope.showNoresult = false;
-                        $scope.results = [];
-                    }
-                });
-
-                function onSearchChange(e, search, params) {
-                    if (search) {
-                        params.name = search;
-                        $resource($scope.searchUrl, params).get(function (response) {
-                            $scope.results = response.results;
-                            $scope.showNoresult = ($scope.results.length === 0);
-                        });
-                    }
-                }
-
-                $rootScope.$on('search.change', onSearchChange);
-
-            }
-        };
-    }])
-
-    .directive('searchItem', function factory() {
-        return {
-            restrict: 'EA',
-            templateUrl: '/tpl/search/item.html',
-            require: '^search',
-            replace: true
-        };
-    })
-
-;
-
-
+    }]);
 angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstrap'])
     .config(['$analyticsProvider', function ($analyticsProvider) {
         var lastVisitedPage = '/';
@@ -1174,6 +1076,19 @@ angular.module("template/list/paged-list.html", []).run(["$templateCache", funct
     "    <span id=\"spinner-mini\" data-us-spinner=\"{lines: 13, length: 0, width: 5, radius: 14, corners: 1, rotate: 0,\n" +
     "    direction: 1, color: '#000', speed: 1.7, trail: 100, shadow: false, hwaccel: false, className: 'spinner', zIndex:\n" +
     "    2e9, top: 'auto', left: 'auto' }\"></span>\n" +
+    "</div>");
+}]);
+
+angular.module("template/search-box/search-box.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/search-box/search-box.html",
+    "<div class=\"form-group search-type-w-icon\">\n" +
+    "    <i class=\"ml-icon-52\"></i>\n" +
+    "    <input type=\"search\" class=\"form-control\"\n" +
+    "           placeholder=\"{{ placeholder }}\"\n" +
+    "           data-ng-model=\"search\"/>\n" +
+    "    <a href=\"\" ng-click=\"erase()\" class=\"clear-form\">\n" +
+    "        <i class=\"ml-icon-33\"></i>\n" +
+    "    </a>\n" +
     "</div>");
 }]);
 
