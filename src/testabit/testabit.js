@@ -58,7 +58,7 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
             return testabit;
         }];
     })
-    .directive('testabit', ['testabit', '$log', '$modal', function (testabit, $log, $modal) {
+    .directive('testabit', ['testabit', '$log', '$modal', '$translate', function (testabit, $log, $modal, $translate) {
 
         function testabitError(err) {
             return "testabit error : " + err;
@@ -165,6 +165,12 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
                     modalInstance.result.then(function (result) {
                         var actionSufix = (parseInt(result) > 0) ? 'positive_vote' : 'negative_vote';
                         testabit.eventTrack(options.category, (options.action + '.' + actionSufix), options.label, result);
+
+                        $translate('testabit.alert.thankyou_message').then(showThankYouAlert, showThankYouAlert);
+
+                        function showThankYouAlert(thankYouMessage){
+                            scope.$emit('alert.show', { type: 'success', msg: thankYouMessage, keep: false });
+                        }
                     });
 
                 } else {

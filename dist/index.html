@@ -945,7 +945,11 @@ the selection are ignored</p>
                     <div class="row">
                         <div class="col-md-6 show-grid">
                             <a class="pull-right" href="http://plnkr.co/edit/qDrwU6RVVrJbng9fEbnc">Demo in plunkr</a>
-<button data-testabit="modal"
+<alert ng-repeat="alert in $root.alerts" type="alert.type" close="$root.closeAlert($index)">
+    {{ alert.msg }}
+</alert>
+<button class="btn"
+        data-testabit="modal"
         data-testabit-category="TestCategory"
         data-testabit-action="test.button"
         data-testabit-label="Test Label"
@@ -987,7 +991,11 @@ the selection are ignored</p>
                                 <tab heading="Markup">
                                     <div plunker-content="markup">
                                         <pre ng-non-bindable><code data-language="html">&lt;a class=&quot;pull-right&quot; href=&quot;http://plnkr.co/edit/qDrwU6RVVrJbng9fEbnc&quot;&gt;Demo in plunkr&lt;/a&gt;
-&lt;button data-testabit=&quot;modal&quot;
+&lt;alert ng-repeat=&quot;alert in $root.alerts&quot; type=&quot;alert.type&quot; close=&quot;$root.closeAlert($index)&quot;&gt;
+    {{ alert.msg }}
+&lt;/alert&gt;
+&lt;button class=&quot;btn&quot;
+        data-testabit=&quot;modal&quot;
         data-testabit-category=&quot;TestCategory&quot;
         data-testabit-action=&quot;test.button&quot;
         data-testabit-label=&quot;Test Label&quot;

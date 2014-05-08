@@ -1,5 +1,9 @@
 <a class="pull-right" href="http://plnkr.co/edit/qDrwU6RVVrJbng9fEbnc">Demo in plunkr</a>
-<button data-testabit="modal"
+<alert ng-repeat="alert in $root.alerts" type="alert.type" close="$root.closeAlert($index)">
+    {{ alert.msg }}
+</alert>
+<button class="btn"
+        data-testabit="modal"
         data-testabit-category="TestCategory"
         data-testabit-action="test.button"
         data-testabit-label="Test Label"

@@ -1,5 +1,6 @@
 {
     "alerts.form.validationMessage" : "Vaya, ha habido un error de validación. Corrige los errores y vuelve a probar. Disculpen las molestias",
     "testabit.button.yes" : "Sí",
-    "testabit.button.no" : "No"
+    "testabit.button.no" : "No",
+    "testabit.alert.thankyou_message" : "Muchas gracias por tu participación"
 }
