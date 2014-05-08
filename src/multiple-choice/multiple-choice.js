@@ -17,14 +17,14 @@ angular.module('ui.atomic.multiple-choice', ['ui.bootstrap', 'ui.atomic.ng-name'
                     option.selected = !option.selected;
                 }
 
-                scope.select = function (option) {
+                function select(option) {
                     option.selected = true;
                 }
 
                 element.on('click', function openModal() {
                         // store the initial selection in case the user closes the modal and dismissed the changes he made
                         var initialSelection = scope.ngModel;
-                        angular.forEach(scope.ngModel, scope.select);
+                        angular.forEach(scope.ngModel, select);
 
                         // Create modal
                         scope.$modal = $modal.open({
