@@ -1,11 +1,8 @@
 <div class="modal-header">
     {{ title }}
-    <button class="btn btn-link pull-right" data-ng-click="close()"><i class="ml-icon-30"></i></button>
+    <button class="btn btn-link pull-right" data-ng-click="$modal.dismiss()"><i class="ml-icon-30"></i></button>
 </div>
-<div data-modal-filter-form
-     class="modal-body"
-     data-form-name="formName">
-</div>
+<div class="modal-body" ng-include="formUrl"></div>
 <div class="modal-footer">
     <ul class="buttons-holder btn-btn">
         <li>

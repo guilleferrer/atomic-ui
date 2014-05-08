@@ -1,108 +1,76 @@
-angular.module('ui.atomic.filter', ['ui.atomic.tools'])
-
+angular.module('ui.atomic.filter', ['ui.bootstrap'])
     .factory('filterStorage', function filterStorageFactory() {
-        var filterStorage = [];
+        var filterStorage = {};
 
-        return filterStorage;
-    })
-    .directive('modalFilter', ['$modal', '$templateCache', '$http', '$compile', function ($modal, $templateCache, $http, $compile) {
+        function save(key, value) {
+            filterStorage[key] = value;
+        }
+
+        function get(key) {
+            return filterStorage[key] || {};
+        }
+
         return {
+            'save': save,
+            'get': get
+        };
+    })
+    .directive('modalFilter', ['$modal' , 'filterStorage', function ($modal, filterStorage) {
+        return {
+            restrict: 'E',
             templateUrl: 'template/filter/button.html',
+            replace: true,
             scope: {
                 title: '@',
                 text: '@',
                 cancelLabel: '@',
                 resetLabel: '@',
                 applyLabel: '@',
-                formName: '@'
+                formName: '@',
+                formUrl: '@'
             },
             link: function (scope) {
-                var modalInstance = {};
 
-                function getFormTemplate() {
-                    $http
-                        .get('/api/filters/' + scope.formName + '/filter.html')
-                        .then(function (response) {
-                            $templateCache.put('template/filter/form.html', response.data);
-                        });
-                }
+                scope.showFilter = function () {
 
-                function showFilter() {
-                    modalInstance = $modal.open({
+                    scope.$modal = $modal.open({
                         windowClass: 'full-modal',
                         templateUrl: 'template/filter/modal.html',
-                        controller: 'FilterPopupController',
                         scope: scope
                     });
-                }
 
-                scope.onFilterButtonClick = function () {
-                    showFilter();
+                    scope.$modal.result.then(function (result) {
+                        scope.$emit('filterEvent.FILTER_CHANGE', result);
+                    });
+
+                    scope.resetFilter = function () {
+                        scope.$broadcast('filter.reset');
+                    };
+
+                    scope.applyFilter = function () {
+                        scope.$broadcast('filter.apply');
+                        scope.$modal.close(filterStorage.get(scope.formName));
+                    };
                 };
-
-                getFormTemplate();
             }
         }
     }])
-    .controller('FilterPopupController', [ '$scope', '$modalInstance', function ($scope, $modalInstance) {
-
-        $scope.resetFilter = function () {
-            $scope.$broadcast('filterEvent.RESET_FILTER_CLICK');
-        };
-
-        $scope.applyFilter = function () {
-            $scope.$broadcast('filterEvent.APPLY_FILTER_CLICK');
-
-            $modalInstance.dismiss('cancel');
-        };
-
-        $scope.close = function () {
-            $modalInstance.dismiss('cancel');
-        };
-    }])
-    .directive('modalFilterForm', ['$modal', '$templateCache', '$compile', function ($modal, $templateCache, $compile) {
+    .directive('modalFilterForm', [ 'filterStorage', function (filterStorage) {
         return {
-            controller: 'FilterFormController',
-            scope: {
-                formName: '='
-            },
-            link: function (scope, element, attr, ctrl) {
-                var template = angular.element($templateCache.get('template/filter/form.html'));
-                var formContentElement = $compile(template)(scope);
+            require: 'form',
+            link: function (scope, elem, attrs) {
+                var formName = attrs.name;
 
-                element.html(formContentElement);
+                angular.extend(scope[formName], filterStorage.get(formName));
+
+                scope.$on('filter.reset', function () {
+                    filterStorage.save(formName, {});
+                    scope[formName] = {};
+                });
+
+                scope.$on('filter.apply', function () {
+                    filterStorage.save(formName, scope[formName])
+                });
             }
         }
-    }])
-
-    .controller('FilterFormController', [ '$scope', 'filterStorage', function ($scope, filterStorage) {
-        $scope.initFilter = function () {
-            if (!filterStorage[$scope.formName]) {
-                filterStorage[$scope.formName] = {};
-            }
-            $scope[$scope.formName] = {};
-
-            angular.extend($scope[$scope.formName], filterStorage[$scope.formName]);
-        };
-
-        $scope.resetFilter = function () {
-            filterStorage[$scope.formName] = {};
-            $scope[$scope.formName] = {};
-        };
-
-        $scope.applyFilter = function () {
-            angular.extend(filterStorage[$scope.formName], $scope[$scope.formName]);
-
-            $scope.$emit('filterEvent.FILTER_CHANGE', $scope[$scope.formName]);
-        };
-
-        $scope.$on('filterEvent.APPLY_FILTER_CLICK', function () {
-            $scope.applyFilter();
-        });
-
-        $scope.$on('filterEvent.RESET_FILTER_CLICK', function () {
-            $scope.resetFilter();
-        });
-
-        $scope.initFilter();
     }]);

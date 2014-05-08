@@ -1,10 +1,10 @@
 /*
  * atomic.ui
- * Version: 0.0.1 - 2014-05-07
+ * Version: 0.0.1 - 2014-05-08
  * License: EULA
  * Author: Guillermo Ferrer <guilleferrer@gmail.com>
  */
-angular.module("ui.atomic", ["ui.atomic.alerts","ui.atomic.back","ui.atomic.compile","ui.atomic.confirm","ui.atomic.fbinvite","ui.atomic.tools","ui.atomic.filter","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.ng-name","ui.atomic.multiple-choice","ui.atomic.nl2br","ui.atomic.search-box","ui.atomic.testabit","ui.atomic.truncate","ui.atomic.urlencode","ui.atomic.user-advice","ui.atomic.whatsapp"]);
+angular.module("ui.atomic", ["ui.atomic.alerts","ui.atomic.back","ui.atomic.compile","ui.atomic.confirm","ui.atomic.fbinvite","ui.atomic.filter","ui.atomic.viewport","ui.atomic.full-screen","ui.atomic.infinite-scroll","ui.atomic.pager","ui.atomic.list","ui.atomic.mailto","ui.atomic.ng-name","ui.atomic.multiple-choice","ui.atomic.nl2br","ui.atomic.search-box","ui.atomic.testabit","ui.atomic.tools","ui.atomic.truncate","ui.atomic.urlencode","ui.atomic.user-advice","ui.atomic.whatsapp"]);
 angular.module('ui.atomic.alerts', [ "ui.bootstrap.alert"])
     .run([ '$rootScope', '$timeout', function ($rootScope, $timeout) {
         // Global alerts Initialization
@@ -182,225 +182,82 @@ angular.module('ui.atomic.fbinvite', [ ]).
     }]);
 
 
-angular.module('ui.atomic.tools', [])
-    .factory('urlTools', function () {
+angular.module('ui.atomic.filter', ['ui.bootstrap'])
+    .factory('filterStorage', function filterStorageFactory() {
+        var filterStorage = {};
 
-        function toKeyValue(obj, prefix) {
-            var str = [];
-            for (var p in obj) {
-                var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
-                str.push(typeof v == "object" ?
-                    toKeyValue(v, k) :
-                    encodeURIComponent(k) + "=" + encodeURIComponent(v));
-            }
-            return str.join("&");
+        function save(key, value) {
+            filterStorage[key] = value;
         }
 
-        /**
-         * Tries to decode the URI component without throwing an exception.
-         *
-         * @private
-         * @param str value potential URI component to check.
-         * @returns {boolean} True if `value` can be decoded
-         * with the decodeURIComponent function.
-         */
-        function tryDecodeURIComponent(value) {
-            try {
-                return decodeURIComponent(value);
-            } catch (e) {
-                // Ignore any invalid uri component
-            }
-        }
-
-
-        /**
-         * Parses an escaped url query string into key-value pairs.
-         * @returns Object.<(string|boolean)>
-         */
-        function parseKeyValue(/**string*/keyValue) {
-            var obj = {}, key_value, key;
-            angular.forEach((keyValue || "").split('&'), function (keyValue) {
-                if (keyValue) {
-                    key_value = keyValue.split('=');
-                    key = tryDecodeURIComponent(key_value[0]);
-                    if (angular.isDefined(key)) {
-                        var val = angular.isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
-                        if (!obj[key]) {
-                            obj[key] = val;
-                        } else if (isArray(obj[key])) {
-                            obj[key].push(val);
-                        } else {
-                            obj[key] = [obj[key], val];
-                        }
-                    }
-                }
-            });
-            return obj;
+        function get(key) {
+            return filterStorage[key] || {};
         }
 
         return {
-            'toKeyValue': toKeyValue,
-            'parseKeyValue': parseKeyValue
+            'save': save,
+            'get': get
         };
-    });
-
-angular.module('ui.atomic.viewport', [])
-    .factory('viewport', function () {
-
-        var viewPort = getViewPort();
-
-        function getViewPort() {
-            var viewPortContent = angular.element('meta[name="viewport"]').attr('content')
-
-            return parseViewPortContent(viewPortContent);
-        }
-
-
-        function parseViewPortContent(viewPortContent) {
-            var obj = {};
-            var viewPortContentArray = viewPortContent.replace(/ /g, '').split(',');
-            angular.forEach(viewPortContentArray, function (part) {
-                var parts = part.split('=');
-                this[parts[0]] = parts[1];
-            }, obj);
-
-            return obj;
-        }
-
-        function serializeViewPortContent(obj) {
-            var parts = [];
-            angular.forEach(obj, function (value, key) {
-                parts.push(key + '=' + value);
-            });
-
-            return parts.join(',');
-        }
-
-        function setViewPort(key, value) {
-            viewPort[key] = value;
-
-            var serializedViewPort = serializeViewPortContent(viewPort);
-            angular.element('meta[name="viewport"]').attr('content', serializedViewPort)
-        }
-
+    })
+    .directive('modalFilter', ['$modal' , 'filterStorage', function ($modal, filterStorage) {
         return {
-            'get': getViewPort,
-            'set': setViewPort
-        }
-    });
+            restrict: 'E',
+            templateUrl: 'template/filter/button.html',
+            replace: true,
+            scope: {
+                title: '@',
+                text: '@',
+                cancelLabel: '@',
+                resetLabel: '@',
+                applyLabel: '@',
+                formName: '@',
+                formUrl: '@'
+            },
+            link: function (scope) {
 
-angular.module('ui.atomic.filter', ['ui.atomic.tools'])
-/**
- * @description
- * The filterHelper creates an interface between the filter and the urls query
- *
- * @api :
- *   - searchToQuery :
- *          reads the 'q' from the url and returns a query {object}
- *          @return {object}
- *   - formToSearch :
- *          transforms a form {object} into a key-value url-encoded 'string'
- *          @return string
- */
-    .factory('filterHelper', ['urlTools', '$stateParams', function (urlTools, $stateParams) {
+                scope.showFilter = function () {
 
-        function searchToQuery() {
-            return urlTools.parseKeyValue($stateParams.q);
-        }
+                    scope.$modal = $modal.open({
+                        windowClass: 'full-modal',
+                        templateUrl: 'template/filter/modal.html',
+                        scope: scope
+                    });
 
-        function formToSearch(form) {
-            var search = {};
-            if (Object.keys(form).length > 0) {
-                search['q'] = urlTools.toKeyValue(form, null);
+                    scope.$modal.result.then(function (result) {
+                        scope.$emit('filterEvent.FILTER_CHANGE', result);
+                    });
+
+                    scope.resetFilter = function () {
+                        scope.$broadcast('filter.reset');
+                    };
+
+                    scope.applyFilter = function () {
+                        scope.$broadcast('filter.apply');
+                        scope.$modal.close(filterStorage.get(scope.formName));
+                    };
+                };
             }
-
-            return search;
         }
-
-        return {
-            'searchToQuery': searchToQuery,
-            'formToSearch': formToSearch
-        };
     }])
-/**
- * @description
- * The mlFilter directive is an attribute directive that is applied to a form and creates a filter form that creates
- * a unique query url ( e.g. /api/resource?q=automatically-created-query ) that can be used to filter api results in a certain api call.
- * The parameter "q" is created as the key of the query value and cannot be changed ( yet ).
- * Also, it creates a "filter" model in the current scope, that can be accessed in the template.
- *  {boolean} $scope.filter.show ( if it should show / hide the filter's form )
- *  {boolean} $scope.filter.active ( if filter is applying right now )
- *
- * @api:
- *
- *  - mlFilter : is the query's model name in the current scope that can be already initialized to a certain value
- *  - name : is the form name
- *  - applyFilter() : used to submit the filter's form
- *  - resetFilter() : used to reset the filter
- *
- *
- * Usage example:
- *
- *         <form data-ml-filter="query" name="myform" data-ng-submit="applyFilter()" >
- *
- *             <input type="text" name="myform[foo]"  value="fooValue" >
- *             <input type="text" name="myform[bar]"  value="barValue" >
- *             <a href="" data-ng-click="resetFilter()" > Reset filter </a>
- *         </form>
- *
- *
- * @depends $stateParams, $state, $location, filterHelper
- */
-    .directive('mlFilter', ['$state', '$stateParams', '$location', 'filterHelper', function ($state, $stateParams, $location, filterHelper) {
-
+    .directive('modalFilterForm', [ 'filterStorage', function (filterStorage) {
         return {
-
-            link: function ($scope, element, attrs) {
-
-                var queryName = attrs.mlFilter;
+            require: 'form',
+            link: function (scope, elem, attrs) {
                 var formName = attrs.name;
 
-                $scope.filter = {
-                    show: false,
-                    active: false
-                };
+                angular.extend(scope[formName], filterStorage.get(formName));
 
-                $scope[formName] = {}; // Clears the form
-                $scope[queryName] = filterHelper.searchToQuery();
+                scope.$on('filter.reset', function () {
+                    filterStorage.save(formName, {});
+                    scope[formName] = {};
+                });
 
-                // Populate Form's model from query
-                $scope[formName] = $scope[queryName];
-                if (Object.keys($scope[formName]).length > 0) {
-                    $scope.filter.active = true;
-                }
-
-                $scope.applyFilter = function () {
-                    // If the form has not been altered... do nothing.
-                    if ($scope[formName].$dirty === false) {
-                        return;
-                    }
-
-                    var search = filterHelper.formToSearch($scope[formName]);
-                    $location.search(search);
-                    $scope.filter.show = false;
-                    $scope.filter.active = true;
-
-                    $scope.$emit('filterEvent.FILTER_CHANGE', search);
-                };
-
-                $scope.resetFilter = function () {
-                    // Reset
-                    $stateParams.q = null;
-                    $state.go($state.current, $stateParams, {reload: false});
-                    $scope[formName] = {}; // Clears the form
-                    $scope[queryName] = '';
-                    $scope.filter.show = false;
-                    $scope.filter.active = false;
-                };
+                scope.$on('filter.apply', function () {
+                    filterStorage.save(formName, scope[formName])
+                });
             }
         }
     }]);
-
 angular.module('ui.atomic.full-screen', ['ui.bootstrap', 'angular-carousel', 'ui.atomic.viewport'])
     .directive('fullScreen', [ '$modal' , 'viewport', function ($modal, viewport) {
 
@@ -841,14 +698,14 @@ angular.module('ui.atomic.multiple-choice', ['ui.bootstrap', 'ui.atomic.ng-name'
                     option.selected = !option.selected;
                 }
 
-                scope.select = function (option) {
+                function select(option) {
                     option.selected = true;
                 }
 
                 element.on('click', function openModal() {
                         // store the initial selection in case the user closes the modal and dismissed the changes he made
                         var initialSelection = scope.ngModel;
-                        angular.forEach(scope.ngModel, scope.select);
+                        angular.forEach(scope.ngModel, select);
 
                         // Create modal
                         scope.$modal = $modal.open({
@@ -1104,6 +961,113 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
         $scope.message = model.message;
     }])
 ;
+angular.module('ui.atomic.tools', [])
+    .factory('urlTools', function () {
+
+        function toKeyValue(obj, prefix) {
+            var str = [];
+            for (var p in obj) {
+                var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+                str.push(typeof v == "object" ?
+                    toKeyValue(v, k) :
+                    encodeURIComponent(k) + "=" + encodeURIComponent(v));
+            }
+            return str.join("&");
+        }
+
+        /**
+         * Tries to decode the URI component without throwing an exception.
+         *
+         * @private
+         * @param str value potential URI component to check.
+         * @returns {boolean} True if `value` can be decoded
+         * with the decodeURIComponent function.
+         */
+        function tryDecodeURIComponent(value) {
+            try {
+                return decodeURIComponent(value);
+            } catch (e) {
+                // Ignore any invalid uri component
+            }
+        }
+
+
+        /**
+         * Parses an escaped url query string into key-value pairs.
+         * @returns Object.<(string|boolean)>
+         */
+        function parseKeyValue(/**string*/keyValue) {
+            var obj = {}, key_value, key;
+            angular.forEach((keyValue || "").split('&'), function (keyValue) {
+                if (keyValue) {
+                    key_value = keyValue.split('=');
+                    key = tryDecodeURIComponent(key_value[0]);
+                    if (angular.isDefined(key)) {
+                        var val = angular.isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
+                        if (!obj[key]) {
+                            obj[key] = val;
+                        } else if (isArray(obj[key])) {
+                            obj[key].push(val);
+                        } else {
+                            obj[key] = [obj[key], val];
+                        }
+                    }
+                }
+            });
+            return obj;
+        }
+
+        return {
+            'toKeyValue': toKeyValue,
+            'parseKeyValue': parseKeyValue
+        };
+    });
+
+angular.module('ui.atomic.viewport', [])
+    .factory('viewport', function () {
+
+        var viewPort = getViewPort();
+
+        function getViewPort() {
+            var viewPortContent = angular.element('meta[name="viewport"]').attr('content')
+
+            return parseViewPortContent(viewPortContent);
+        }
+
+
+        function parseViewPortContent(viewPortContent) {
+            var obj = {};
+            var viewPortContentArray = viewPortContent.replace(/ /g, '').split(',');
+            angular.forEach(viewPortContentArray, function (part) {
+                var parts = part.split('=');
+                this[parts[0]] = parts[1];
+            }, obj);
+
+            return obj;
+        }
+
+        function serializeViewPortContent(obj) {
+            var parts = [];
+            angular.forEach(obj, function (value, key) {
+                parts.push(key + '=' + value);
+            });
+
+            return parts.join(',');
+        }
+
+        function setViewPort(key, value) {
+            viewPort[key] = value;
+
+            var serializedViewPort = serializeViewPortContent(viewPort);
+            angular.element('meta[name="viewport"]').attr('content', serializedViewPort)
+        }
+
+        return {
+            'get': getViewPort,
+            'set': setViewPort
+        }
+    });
+
 angular.module('ui.atomic.truncate', [])
     .filter('truncate', function () {
         return function (text, length, end) {

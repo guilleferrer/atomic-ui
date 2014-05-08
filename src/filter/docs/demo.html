@@ -1,25 +1,19 @@
-<!--<div ng-controller="FilterDemoCtrl">-->
+<div ng-controller="FilterDemoCtrl">
+    <modal-filter form-name="myform" form-url="urlofmyform" reset-label="Reset" apply-label="Filtrar"></modal-filter>
+    <pre>
+        Current filter:
 
-    <!--<modal-filter-button></modal-filter-button>-->
-    <!--<modal-filter-form>-->
-        <!--<form ></form>-->
-    <!--</modal-filter-form>-->
+        {{ currentFilter }}
+    </pre>
+    <script type="text/ng-template" id="urlofmyform">
+        <form name="myform" data-modal-filter-form>
+            <input type="text" ng-model="myform.text"/>
+            <input type="text" ng-model="myform.another"/>
+            <attr ng-init="colors=[{name:'red'},{name:'green'}]"></attr>
+            <multiple-choice choices="colors" ng-model="myform.selection" data-modal-header="Select one of this colors" data-modal-footer="OK">
+                <button class="btn btn-primary">Select your favorite colors</button>
+            </multiple-choice>
+        </form>
+    </script>
 
-
-
-<!--</div>-->
-
-// entity_edit.html.twig
-<modal-filter-button></modal-filter-button>
-<modal-filter-form>
-    {{ form_widget(form) }}
-</modal-filter-form>
-
-
-
-
-<modal-filter-button></modal-filter-button>
-<modal-filter-form>
-
-</modal-filter-form>
-
+</div>

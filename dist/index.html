@@ -14,7 +14,7 @@
     <!--<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular-touch.min.js"></script>-->
     <script src="components/fastclick/lib/fastclick.js"></script>
     <script src="components/jquery/dist/jquery.min.js"></script>
-    <script src="components/angular/angular.min.js"></script>
+    <script src="components/angular/angular.js"></script>
     <script src="components/angular-touch/angular-touch.min.js"></script>
     <script src="components/angular-carousel/dist/angular-carousel.min.js"></script>
     <script src="components/angular-translate/angular-translate.min.js"></script>
@@ -24,7 +24,7 @@
 
     <script src="components/angular-mocks/angular-mocks.js"></script>
     <script src="components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
-    <script src="dist/ui-atomic-tpls-0.0.1.min.js"></script>
+    <script src="dist/ui-atomic-tpls-0.0.1.js"></script>
     <script src="dist/assets/app.js"></script>
     <link href="dist/assets/theme.css" rel="stylesheet"/>
     <link href="dist/ui-atomic-0.0.1.css" rel="stylesheet"/>
@@ -390,7 +390,25 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 show-grid">
-                            <div ng-controller="FilterDemoCtrl"></div>
+                            <div ng-controller="FilterDemoCtrl">
+    <modal-filter form-name="myform" form-url="urlofmyform" reset-label="Reset" apply-label="Filtrar"></modal-filter>
+    <pre>
+        Current filter:
+
+        {{ currentFilter }}
+    </pre>
+    <script type="text/ng-template" id="urlofmyform">
+        <form name="myform" data-modal-filter-form>
+            <input type="text" ng-model="myform.text"/>
+            <input type="text" ng-model="myform.another"/>
+            <attr ng-init="colors=[{name:'red'},{name:'green'}]"></attr>
+            <multiple-choice choices="colors" ng-model="myform.selection" data-modal-header="Select one of this colors" data-modal-footer="OK">
+                <button class="btn btn-primary">Select your favorite colors</button>
+            </multiple-choice>
+        </form>
+    </script>
+
+</div>
                         </div>
                         <div class="col-md-6">
                             <p>Filter documentation ( TODO )</p>
@@ -402,12 +420,34 @@
                             <tabset>
                                 <tab heading="Markup">
                                     <div plunker-content="markup">
-                                        <pre ng-non-bindable><code data-language="html">&lt;div ng-controller=&quot;FilterDemoCtrl&quot;&gt;&lt;/div&gt;</code></pre>
+                                        <pre ng-non-bindable><code data-language="html">&lt;div ng-controller=&quot;FilterDemoCtrl&quot;&gt;
+    &lt;modal-filter form-name=&quot;myform&quot; form-url=&quot;urlofmyform&quot; reset-label=&quot;Reset&quot; apply-label=&quot;Filtrar&quot;&gt;&lt;/modal-filter&gt;
+    &lt;pre&gt;
+        Current filter:
+
+        {{ currentFilter }}
+    &lt;/pre&gt;
+    &lt;script type=&quot;text/ng-template&quot; id=&quot;urlofmyform&quot;&gt;
+        &lt;form name=&quot;myform&quot; data-modal-filter-form&gt;
+            &lt;input type=&quot;text&quot; ng-model=&quot;myform.text&quot;/&gt;
+            &lt;input type=&quot;text&quot; ng-model=&quot;myform.another&quot;/&gt;
+            &lt;attr ng-init=&quot;colors=[{name:&#x27;red&#x27;},{name:&#x27;green&#x27;}]&quot;&gt;&lt;/attr&gt;
+            &lt;multiple-choice choices=&quot;colors&quot; ng-model=&quot;myform.selection&quot; data-modal-header=&quot;Select one of this colors&quot; data-modal-footer=&quot;OK&quot;&gt;
+                &lt;button class=&quot;btn btn-primary&quot;&gt;Select your favorite colors&lt;/button&gt;
+            &lt;/multiple-choice&gt;
+        &lt;/form&gt;
+    &lt;/script&gt;
+
+&lt;/div&gt;</code></pre>
                                     </div>
                                 </tab>
                                 <tab heading="JavaScript">
                                     <div plunker-content="javascript">
-                                        <pre ng-non-bindable><code data-language="javascript">function FilterDemoCtrl(){
+                                        <pre ng-non-bindable><code data-language="javascript">function FilterDemoCtrl($scope) {
+
+    $scope.$on(&#x27;filterEvent.FILTER_CHANGE&#x27;, function (event, result) {
+        $scope.currentFilter = result;
+    })
 
 }</code></pre>
                                     </div>
@@ -416,7 +456,11 @@
                         </div>
                     </div>
                 </section>
-                <script>function FilterDemoCtrl(){
+                <script>function FilterDemoCtrl($scope) {
+
+    $scope.$on('filterEvent.FILTER_CHANGE', function (event, result) {
+        $scope.currentFilter = result;
+    })
 
 }</script>
                 
@@ -1276,11 +1320,11 @@ it is hidden, try openning this page with an iOS device )</p>
             
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
-                        ng-class="{'btn-primary': module.tools}"
-                        ng-model="module.tools"
+                        ng-class="{'btn-primary': module.filter}"
+                        ng-model="module.filter"
                         btn-checkbox
-                        ng-change="selectedChanged('tools', module.tools)">
-                    Tools
+                        ng-change="selectedChanged('filter', module.filter)">
+                    Filter
                 </button>
                 
             </div>
@@ -1289,17 +1333,6 @@ it is hidden, try openning this page with an iOS device )</p>
             
             <div class="btn-group" style="width: 100%;">
                 
-                <button type="button" class="btn btn-default"
-                        style="width: 33%; border-radius: 0;"
-                        ng-class="{'btn-primary': module.filter}"
-                        ng-model="module.filter"
-                        btn-checkbox
-                        ng-change="selectedChanged('filter', module.filter)">
-                    Filter
-                </button>
-                
-            
-            
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.viewport}"
@@ -1320,12 +1353,8 @@ it is hidden, try openning this page with an iOS device )</p>
                     Full-screen
                 </button>
                 
-            </div>
             
             
-            
-            <div class="btn-group" style="width: 100%;">
-                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.infinite-scroll}"
@@ -1335,8 +1364,12 @@ it is hidden, try openning this page with an iOS device )</p>
                     Infinite-scroll
                 </button>
                 
+            </div>
             
             
+            
+            <div class="btn-group" style="width: 100%;">
+                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.pager}"
@@ -1357,12 +1390,8 @@ it is hidden, try openning this page with an iOS device )</p>
                     List
                 </button>
                 
-            </div>
             
             
-            
-            <div class="btn-group" style="width: 100%;">
-                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.mailto}"
@@ -1372,8 +1401,12 @@ it is hidden, try openning this page with an iOS device )</p>
                     Mailto
                 </button>
                 
+            </div>
             
             
+            
+            <div class="btn-group" style="width: 100%;">
+                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.ng-name}"
@@ -1394,12 +1427,8 @@ it is hidden, try openning this page with an iOS device )</p>
                     Multiple-choice
                 </button>
                 
-            </div>
             
             
-            
-            <div class="btn-group" style="width: 100%;">
-                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.nl2br}"
@@ -1409,8 +1438,12 @@ it is hidden, try openning this page with an iOS device )</p>
                     Nl2br
                 </button>
                 
+            </div>
             
             
+            
+            <div class="btn-group" style="width: 100%;">
+                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.search-box}"
@@ -1429,6 +1462,17 @@ it is hidden, try openning this page with an iOS device )</p>
                         btn-checkbox
                         ng-change="selectedChanged('testabit', module.testabit)">
                     Testabit
+                </button>
+                
+            
+            
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.tools}"
+                        ng-model="module.tools"
+                        btn-checkbox
+                        ng-change="selectedChanged('tools', module.tools)">
+                    Tools
                 </button>
                 
             </div>
