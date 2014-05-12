@@ -48,5 +48,6 @@
   ],
   "resolutions": {
     "angular": "1.2.4"
-  }
+  },
+  "directory" : "components"
 }
