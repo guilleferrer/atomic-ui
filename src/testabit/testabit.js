@@ -4,7 +4,13 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
         $analyticsProvider.registerPageTrack(function (path) {
             lastVisitedPage = path;
             if (window.ga) {
-                ga('send', 'pageview', path);
+                window.ga('send', 'pageview', path);
+            }
+
+            if (window.plugins && window.plugins.gaPlugin) {
+                window.plugins.gaPlugin.trackPage(function () {
+                }, function () {
+                }, path)
             }
         });
 
@@ -12,7 +18,20 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
             if (window.ga) {
                 window.ga('send', 'event', properties.category, action, properties.label, { page: lastVisitedPage });
             }
+
+            if (window.plugins && window.plugins.gaPlugin) {
+                var eventTrackSuccess = function () {
+                    console.log('successEventTrack');
+                };
+
+                var eventTrackError = function () {
+                    console.log('errorEventTrack');
+                };
+                window.plugins.gaPlugin.trackEvent(eventTrackSuccess, eventTrackError, properties.category, action, properties.label, -1);
+            }
         });
+
+
     }])
     .provider('testabit', function () {
 
@@ -168,7 +187,7 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
 
                         $translate('testabit.alert.thankyou_message').then(showThankYouAlert, showThankYouAlert);
 
-                        function showThankYouAlert(thankYouMessage){
+                        function showThankYouAlert(thankYouMessage) {
                             scope.$emit('alert.show', { type: 'success', msg: thankYouMessage, keep: false });
                         }
                     });
@@ -192,5 +211,4 @@ angular.module("ui.atomic.testabit", ['angulartics', 'angulartics', 'ui.bootstra
         $scope.buttons = model.buttons;
         $scope.title = model.title;
         $scope.message = model.message;
-    }])
-;
+    }]);
