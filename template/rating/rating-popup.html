@@ -1,0 +1,15 @@
+<div class="modal-body">
+    <p class="medium-paragraph">{{ text }}</p>
+
+    <div data-star-rating data-entity="entity" data-max="5" data-star-size="big" data-show-my-vote="true"
+         data-my-user-id="myUserId"></div>
+</div>
+<div class="modal-footer">
+    <ul class="buttons-list padding-add-x-20 padding-add-bottom-20">
+        <li data-ng-repeat="btn in buttons">
+            <button data-ng-click="close(btn.result)" class="btn btn-block" data-ng-class="btn.cssClass">
+                {{ btn.label }}
+            </button>
+        </li>
+    </ul>
+</div>

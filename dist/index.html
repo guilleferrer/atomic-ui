@@ -6,7 +6,7 @@
     <meta name="fragment" content="!"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Atomic UI Components Testabit</title>
-    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Confirm, Filter, Full-screen, List, Mailto, Multiple-choice, Nl2br, Search-box, Testabit, Truncate, Urlencode, Whatsapp, ">
+    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Confirm, Filter, Full-screen, List, Mailto, Multiple-choice, Nl2br, Rating, Search-box, Testabit, Truncate, Urlencode, Whatsapp, ">
     <meta name="google-site-verification" content="7lc5HyceLDqpV_6oNHteYFfxDJH7-S3DwnJKtNUKcRg"/>
     <!--<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/0.6.7/fastclick.min.js"></script>-->
     <!--<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>-->
@@ -73,6 +73,8 @@
                             <li><a href="#multiple-choice">Multiple-choice</a></li>
                             
                             <li><a href="#nl2br">Nl2br</a></li>
+                            
+                            <li><a href="#rating">Rating</a></li>
                             
                             <li><a href="#search-box">Search-box</a></li>
                             
@@ -146,6 +148,8 @@
                         <li><a href="#multiple-choice">Multiple-choice</a></li>
                         
                         <li><a href="#nl2br">Nl2br</a></li>
+                        
+                        <li><a href="#rating">Rating</a></li>
                         
                         <li><a href="#search-box">Search-box</a></li>
                         
@@ -617,8 +621,8 @@ The pictures shown in the carousel are those defined in the array <em>images</em
             }
         ]};
 
-    $httpBackend.whenGET(/^\/api\/entities\?page=1/).respond(firstPage)
-    $httpBackend.whenGET(/^\/api\/entities\?page=2/).respond(secondPage)
+    $httpBackend.whenGET(/^\/api\/entities\?page=1/).respond(firstPage);
+    $httpBackend.whenGET(/^\/api\/entities\?page=2/).respond(secondPage);
 }</code></pre>
                                     </div>
                                 </tab>
@@ -658,8 +662,8 @@ The pictures shown in the carousel are those defined in the array <em>images</em
             }
         ]};
 
-    $httpBackend.whenGET(/^\/api\/entities\?page=1/).respond(firstPage)
-    $httpBackend.whenGET(/^\/api\/entities\?page=2/).respond(secondPage)
+    $httpBackend.whenGET(/^\/api\/entities\?page=1/).respond(firstPage);
+    $httpBackend.whenGET(/^\/api\/entities\?page=2/).respond(secondPage);
 }</script>
                 
                 <section id="mailto">
@@ -883,6 +887,139 @@ the selection are ignored</p>
                 <script>function nl2brDemoCtrl(){
 
 }</script>
+                
+                <section id="rating">
+                    <div class="page-header">
+                        <h1>Rating
+                            <small>
+                                (ui.atomic.rating)
+                            </small>
+                        </h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 show-grid">
+                            <div ng-controller="RatingDemoCtrl">
+    <div data-star-rating
+         data-star-rating-entity="myEntity"
+         data-my-user-id="7"
+         data-star-size="small"></div>
+
+    <button data-star-rating-popup
+            data-star-rating-popup-text="vote.popup.text"
+            data-star-rating-popup-accept-button-text="vote.popup.btn.accept"
+            data-star-rating-popup-cancel-button-text="vote.popup.btn.cancel"
+            data-star-rating-entity="myEntity"
+            data-star-rating-popup-my-user-id="7">
+        click Here to vote
+    </button>
+</div>
+                        </div>
+                        <div class="col-md-6">
+                            <p>Rating:</p>
+
+<p>TODO: documentation
+TODO : why do we have a rating directive instead of using that from ui.bootstrap ??!</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row code">
+                        <div class="col-md-12" >
+                            <tabset>
+                                <tab heading="Markup">
+                                    <div plunker-content="markup">
+                                        <pre ng-non-bindable><code data-language="html">&lt;div ng-controller=&quot;RatingDemoCtrl&quot;&gt;
+    &lt;div data-star-rating
+         data-star-rating-entity=&quot;myEntity&quot;
+         data-my-user-id=&quot;7&quot;
+         data-star-size=&quot;small&quot;&gt;&lt;/div&gt;
+
+    &lt;button data-star-rating-popup
+            data-star-rating-popup-text=&quot;vote.popup.text&quot;
+            data-star-rating-popup-accept-button-text=&quot;vote.popup.btn.accept&quot;
+            data-star-rating-popup-cancel-button-text=&quot;vote.popup.btn.cancel&quot;
+            data-star-rating-entity=&quot;myEntity&quot;
+            data-star-rating-popup-my-user-id=&quot;7&quot;&gt;
+        click Here to vote
+    &lt;/button&gt;
+&lt;/div&gt;</code></pre>
+                                    </div>
+                                </tab>
+                                <tab heading="JavaScript">
+                                    <div plunker-content="javascript">
+                                        <pre ng-non-bindable><code data-language="javascript">function RatingDemoCtrl($scope, $rootScope, $httpBackend) {
+
+    $scope.myEntity = {
+        rating: {
+            id: 1,
+            votes: [
+                {
+                    score: 3,
+                    created_by: 7
+                }
+            ]
+        }
+    };
+
+    $scope.$on(&#x27;ratingEvent.STAR_CLICK&#x27;, function (event, rate) {
+        console.log(&#x27;ratingEvent.STAR_CLICK : &#x27;, rate);
+    });
+
+    $rootScope.$on(&#x27;ratingEvent.SUCCESS&#x27;, function (event, rate) {
+        console.log(&#x27;ratingEvent.SUCCESS : &#x27;, rate);
+    });
+
+    $httpBackend.whenPOST(/^\/api\/ratings\/1\/votes\/\d\/rating/).respond({
+        id: 1,
+        votes: [
+            {
+                score: 3,
+                created_by: 7
+            }
+        ]
+    });
+}
+
+RatingDemoCtrl.$inject = [ &#x27;$scope&#x27;, &#x27;$rootScope&#x27;, &#x27;$httpBackend&#x27;];</code></pre>
+                                    </div>
+                                </tab>
+                            </tabset>
+                        </div>
+                    </div>
+                </section>
+                <script>function RatingDemoCtrl($scope, $rootScope, $httpBackend) {
+
+    $scope.myEntity = {
+        rating: {
+            id: 1,
+            votes: [
+                {
+                    score: 3,
+                    created_by: 7
+                }
+            ]
+        }
+    };
+
+    $scope.$on('ratingEvent.STAR_CLICK', function (event, rate) {
+        console.log('ratingEvent.STAR_CLICK : ', rate);
+    });
+
+    $rootScope.$on('ratingEvent.SUCCESS', function (event, rate) {
+        console.log('ratingEvent.SUCCESS : ', rate);
+    });
+
+    $httpBackend.whenPOST(/^\/api\/ratings\/1\/votes\/\d\/rating/).respond({
+        id: 1,
+        votes: [
+            {
+                score: 3,
+                created_by: 7
+            }
+        ]
+    });
+}
+
+RatingDemoCtrl.$inject = [ '$scope', '$rootScope', '$httpBackend'];</script>
                 
                 <section id="search-box">
                     <div class="page-header">
@@ -1454,6 +1591,17 @@ it is hidden, try openning this page with an iOS device )</p>
                 
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.rating}"
+                        ng-model="module.rating"
+                        btn-checkbox
+                        ng-change="selectedChanged('rating', module.rating)">
+                    Rating
+                </button>
+                
+            
+            
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.search-box}"
                         ng-model="module.search-box"
                         btn-checkbox
@@ -1472,8 +1620,12 @@ it is hidden, try openning this page with an iOS device )</p>
                     Testabit
                 </button>
                 
+            </div>
             
             
+            
+            <div class="btn-group" style="width: 100%;">
+                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.tools}"
@@ -1483,12 +1635,8 @@ it is hidden, try openning this page with an iOS device )</p>
                     Tools
                 </button>
                 
-            </div>
             
             
-            
-            <div class="btn-group" style="width: 100%;">
-                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.truncate}"
@@ -1509,8 +1657,12 @@ it is hidden, try openning this page with an iOS device )</p>
                     Urlencode
                 </button>
                 
+            </div>
             
             
+            
+            <div class="btn-group" style="width: 100%;">
+                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.user-advice}"
@@ -1520,12 +1672,8 @@ it is hidden, try openning this page with an iOS device )</p>
                     User-advice
                 </button>
                 
-            </div>
             
             
-            
-            <div class="btn-group" style="width: 100%;">
-                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.whatsapp}"

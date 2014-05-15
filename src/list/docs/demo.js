@@ -30,6 +30,6 @@ function ListDemoCtrl($httpBackend) {
             }
         ]};
 
-    $httpBackend.whenGET(/^\/api\/entities\?page=1/).respond(firstPage)
-    $httpBackend.whenGET(/^\/api\/entities\?page=2/).respond(secondPage)
+    $httpBackend.whenGET(/^\/api\/entities\?page=1/).respond(firstPage);
+    $httpBackend.whenGET(/^\/api\/entities\?page=2/).respond(secondPage);
 }
