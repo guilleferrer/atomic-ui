@@ -5,7 +5,7 @@ Atomic UI contains the markup and javascript for all Testabit's components.
 ## Installation
 
 Download the project and run ``bower install``  to get all the required libraries
-Then use grunt to build the project doing ``grunt build`` .
+Then use grunt to build the project doing ``grunt`` .
 Open dist/index.html to see the documentation and examples
 
 ## Development
