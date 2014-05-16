@@ -22,16 +22,25 @@
     <script src="components/angularitics/src/angulartics.js"></script>
     <script src="components/angular-adaptive-detection/angular-adaptive-detection.min.js"></script>
 
+    <!--Maps Javascripts-->
+    <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
+    <script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
+    <script src="components/leaflet-plugins/layer/tile/Google.js"></script>
+    <script src="components/angular-leaflet/dist/angular-leaflet-directive.js"></script>
+    <script src="components/angularjs-geolocation/src/geolocation.js"></script>
+    <!--END Maps Javascripts-->
+
     <script src="components/angular-mocks/angular-mocks.js"></script>
     <script src="components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
     <script src="dist/ui-atomic-tpls-<%= pkg.version%>.js"></script>
     <script src="dist/assets/app.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css">
     <link href="dist/assets/theme.css" rel="stylesheet"/>
     <link href="dist/ui-atomic-<%= pkg.version%>.css" rel="stylesheet"/>
     <link rel="stylesheet" href="dist/assets/rainbow.css"/>
     <link rel="stylesheet" href="dist/assets/demo.css"/>
 </head>
-<body class="ng-cloak" ng-controller="MainCtrl">
+<body class="ng-cloak">
 <header class="navbar navbar-default navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">

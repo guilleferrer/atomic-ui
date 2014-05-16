@@ -6,7 +6,7 @@
     <meta name="fragment" content="!"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Atomic UI Components Testabit</title>
-    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Confirm, Connect, Filter, Full-screen, List, Mailto, Multiple-choice, Nl2br, Rating, Search-box, Testabit, Truncate, Urlencode, Whatsapp, ">
+    <meta name="description" content="AngularJS (Angular) native directives for Bootstrap. Small footprint (5kB gzipped!), no 3rd party JS dependencies (jQuery, bootstrap JS) required! Widgets: Alerts, Back, Confirm, Connect, Filter, Full-screen, List, Mailto, Map, Multiple-choice, Nl2br, Rating, Search-box, Testabit, Truncate, Urlencode, Whatsapp, ">
     <meta name="google-site-verification" content="7lc5HyceLDqpV_6oNHteYFfxDJH7-S3DwnJKtNUKcRg"/>
     <!--<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/0.6.7/fastclick.min.js"></script>-->
     <!--<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>-->
@@ -22,16 +22,25 @@
     <script src="components/angularitics/src/angulartics.js"></script>
     <script src="components/angular-adaptive-detection/angular-adaptive-detection.min.js"></script>
 
+    <!--Maps Javascripts-->
+    <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
+    <script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
+    <script src="components/leaflet-plugins/layer/tile/Google.js"></script>
+    <script src="components/angular-leaflet/dist/angular-leaflet-directive.js"></script>
+    <script src="components/angularjs-geolocation/src/geolocation.js"></script>
+    <!--END Maps Javascripts-->
+
     <script src="components/angular-mocks/angular-mocks.js"></script>
     <script src="components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
     <script src="dist/ui-atomic-tpls-0.0.1.js"></script>
     <script src="dist/assets/app.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css">
     <link href="dist/assets/theme.css" rel="stylesheet"/>
     <link href="dist/ui-atomic-0.0.1.css" rel="stylesheet"/>
     <link rel="stylesheet" href="dist/assets/rainbow.css"/>
     <link rel="stylesheet" href="dist/assets/demo.css"/>
 </head>
-<body class="ng-cloak" ng-controller="MainCtrl">
+<body class="ng-cloak">
 <header class="navbar navbar-default navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
@@ -71,6 +80,8 @@
                             <li><a href="#list">List</a></li>
                             
                             <li><a href="#mailto">Mailto</a></li>
+                            
+                            <li><a href="#map">Map</a></li>
                             
                             <li><a href="#multiple-choice">Multiple-choice</a></li>
                             
@@ -148,6 +159,8 @@
                         <li><a href="#list">List</a></li>
                         
                         <li><a href="#mailto">Mailto</a></li>
+                        
+                        <li><a href="#map">Map</a></li>
                         
                         <li><a href="#multiple-choice">Multiple-choice</a></li>
                         
@@ -823,6 +836,230 @@ The pictures shown in the carousel are those defined in the array <em>images</em
                 <script>function MailtoDemoCtrl() {
 
 }</script>
+                
+                <section id="map">
+                    <div class="page-header">
+                        <h1>Map
+                            <small>
+                                (ui.atomic.map)
+                            </small>
+                        </h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 show-grid">
+                            <div ng-controller="MapDemoCtrl">
+    <div class="map"
+         data-width="500"
+         data-height="500"
+         data-api-url="/api/offers"
+         data-api-query="query"
+         data-popup="onPopup"
+         data-mycenter="myCenter"
+         data-zoom="10">
+    </div>
+</div>
+
+                        </div>
+                        <div class="col-md-6">
+                            <p>The map directive creates a map on your page and loads a series of markers in it
+The markers are loaded via a call to the API</p>
+
+<p><strong>Api</strong></p>
+
+<ul>
+<li>api-url :   ( default : undefined ) defines the backend url to be called to load the markers.
+         It expects a json array of objects having a "marker" property having the coordinates of the marker
+         to be loaded in the map.</li>
+<li>marker-entity-name: ( default 'location' ) property whose value contains the coordinates of the marker position</li>
+<li>popup: &amp;  scope function that defines the popup text to be shown in every marker point</li>
+<li>query:  ( default: {} ) model that allows filtering the markers to be added in a specific way</li>
+<li>mycenter: ( default {} ) model that allows to force the center of the map to a certain location</li>
+<li>width : ( default : '100%' ) of the map</li>
+<li>height : ( default : '100%' )  of the map</li>
+</ul>
+
+<p>TODO</p>
+
+<ul>
+<li>Remove dependency with Pager ( as a UI component it should only $emit events but never make use of $http or Pager )</li>
+<li>Remove dependency with images and do not always overwrite them with "/bundles/undfmaps/images/map<em>user.png", "/bundles/undfmaps/images/map</em>pin.png"</li>
+</ul>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row code">
+                        <div class="col-md-12" >
+                            <tabset>
+                                <tab heading="Markup">
+                                    <div plunker-content="markup">
+                                        <pre ng-non-bindable><code data-language="html">&lt;div ng-controller=&quot;MapDemoCtrl&quot;&gt;
+    &lt;div class=&quot;map&quot;
+         data-width=&quot;500&quot;
+         data-height=&quot;500&quot;
+         data-api-url=&quot;/api/offers&quot;
+         data-api-query=&quot;query&quot;
+         data-popup=&quot;onPopup&quot;
+         data-mycenter=&quot;myCenter&quot;
+         data-zoom=&quot;10&quot;&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+                                    </div>
+                                </tab>
+                                <tab heading="JavaScript">
+                                    <div plunker-content="javascript">
+                                        <pre ng-non-bindable><code data-language="javascript">function MapDemoCtrl($scope, $httpBackend) {
+    &#x27;use strict&#x27;;
+
+    /**
+     * Query that will be appended to the url when searching for markers
+     * @type {{}}
+     */
+    $scope.query = {};
+
+    /**
+     * Define a center if you want to center the map in a point
+     *
+     * @type {{lat: number, lng: number, zoom: number}}
+     */
+    $scope.myCenter = {
+        lat: 41.38170,
+        lng: 2.15910,
+        zoom: 16
+    };
+
+    /**
+     * Implement your own popup html that will appear when the marker is clicked
+     * @param marker
+     * @returns {string}
+     */
+    $scope.onPopup = function (marker) {
+        return &#x27;&lt;a href=&quot;/#/offers/&#x27; + marker.id + &#x27;&quot;&gt;&#x27; + marker.title + &#x27;&lt;/a&gt;&#x27;;
+    };
+
+    /**
+     * Response from the server using a pager
+     *
+     * @type {{nbPages: number, nbResults: number, results: *[]}}
+     */
+    var response = {
+        nbPages: 1,
+        nbResults: 2,
+        results: [
+            {
+                location: {
+                    id: 1,
+                    title: &#x27;Car on Sale&#x27;,
+                    lat: 41.38202,
+                    lng: 2.15876,
+                    icon: {
+                        iconUrl: &#x27;http://www.lorempixel.com/25/25&#x27;,
+                        iconSize: [25, 25],
+                        shadowSize: [5, 5],
+                        shadowAnchor: [5, 5]
+                    }
+                }
+
+            },
+            {
+                location: {
+                    id: 2,
+                    title: &#x27;Washing machine on sale&#x27;,
+                    lat: 41.38230,
+                    lng: 2.15899,
+                    icon: {
+                        iconUrl: &#x27;http://www.lorempixel.com/25/25&#x27;,
+                        iconSize: [25, 25],
+                        shadowSize: [5, 5],
+                        shadowAnchor: [5, 5]
+                    }
+                }
+            }
+        ]
+    };
+    $httpBackend.whenGET(/^\/api\/offers\?.*page=\d/).respond(response);
+}
+
+MapDemoCtrl.$inject = [ &#x27;$scope&#x27;, &#x27;$httpBackend&#x27;];</code></pre>
+                                    </div>
+                                </tab>
+                            </tabset>
+                        </div>
+                    </div>
+                </section>
+                <script>function MapDemoCtrl($scope, $httpBackend) {
+    'use strict';
+
+    /**
+     * Query that will be appended to the url when searching for markers
+     * @type {{}}
+     */
+    $scope.query = {};
+
+    /**
+     * Define a center if you want to center the map in a point
+     *
+     * @type {{lat: number, lng: number, zoom: number}}
+     */
+    $scope.myCenter = {
+        lat: 41.38170,
+        lng: 2.15910,
+        zoom: 16
+    };
+
+    /**
+     * Implement your own popup html that will appear when the marker is clicked
+     * @param marker
+     * @returns {string}
+     */
+    $scope.onPopup = function (marker) {
+        return '<a href="/#/offers/' + marker.id + '">' + marker.title + '</a>';
+    };
+
+    /**
+     * Response from the server using a pager
+     *
+     * @type {{nbPages: number, nbResults: number, results: *[]}}
+     */
+    var response = {
+        nbPages: 1,
+        nbResults: 2,
+        results: [
+            {
+                location: {
+                    id: 1,
+                    title: 'Car on Sale',
+                    lat: 41.38202,
+                    lng: 2.15876,
+                    icon: {
+                        iconUrl: 'http://www.lorempixel.com/25/25',
+                        iconSize: [25, 25],
+                        shadowSize: [5, 5],
+                        shadowAnchor: [5, 5]
+                    }
+                }
+
+            },
+            {
+                location: {
+                    id: 2,
+                    title: 'Washing machine on sale',
+                    lat: 41.38230,
+                    lng: 2.15899,
+                    icon: {
+                        iconUrl: 'http://www.lorempixel.com/25/25',
+                        iconSize: [25, 25],
+                        shadowSize: [5, 5],
+                        shadowAnchor: [5, 5]
+                    }
+                }
+            }
+        ]
+    };
+    $httpBackend.whenGET(/^\/api\/offers\?.*page=\d/).respond(response);
+}
+
+MapDemoCtrl.$inject = [ '$scope', '$httpBackend'];</script>
                 
                 <section id="multiple-choice">
                     <div class="page-header">
@@ -1664,6 +1901,17 @@ it is hidden, try openning this page with an iOS device )</p>
             
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
+                        ng-class="{'btn-primary': module.map}"
+                        ng-model="module.map"
+                        btn-checkbox
+                        ng-change="selectedChanged('map', module.map)">
+                    Map
+                </button>
+                
+            
+            
+                <button type="button" class="btn btn-default"
+                        style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.ng-name}"
                         ng-model="module.ng-name"
                         btn-checkbox
@@ -1671,8 +1919,12 @@ it is hidden, try openning this page with an iOS device )</p>
                     Ng-name
                 </button>
                 
+            </div>
             
             
+            
+            <div class="btn-group" style="width: 100%;">
+                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.multiple-choice}"
@@ -1682,12 +1934,8 @@ it is hidden, try openning this page with an iOS device )</p>
                     Multiple-choice
                 </button>
                 
-            </div>
             
             
-            
-            <div class="btn-group" style="width: 100%;">
-                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.nl2br}"
@@ -1708,8 +1956,12 @@ it is hidden, try openning this page with an iOS device )</p>
                     Rating
                 </button>
                 
+            </div>
             
             
+            
+            <div class="btn-group" style="width: 100%;">
+                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.search-box}"
@@ -1719,12 +1971,8 @@ it is hidden, try openning this page with an iOS device )</p>
                     Search-box
                 </button>
                 
-            </div>
             
             
-            
-            <div class="btn-group" style="width: 100%;">
-                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.testabit}"
@@ -1745,8 +1993,12 @@ it is hidden, try openning this page with an iOS device )</p>
                     Tools
                 </button>
                 
+            </div>
             
             
+            
+            <div class="btn-group" style="width: 100%;">
+                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.truncate}"
@@ -1756,12 +2008,8 @@ it is hidden, try openning this page with an iOS device )</p>
                     Truncate
                 </button>
                 
-            </div>
             
             
-            
-            <div class="btn-group" style="width: 100%;">
-                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.urlencode}"
@@ -1782,8 +2030,12 @@ it is hidden, try openning this page with an iOS device )</p>
                     User-advice
                 </button>
                 
+            </div>
             
             
+            
+            <div class="btn-group" style="width: 100%;">
+                
                 <button type="button" class="btn btn-default"
                         style="width: 33%; border-radius: 0;"
                         ng-class="{'btn-primary': module.whatsapp}"
@@ -1793,8 +2045,6 @@ it is hidden, try openning this page with an iOS device )</p>
                     Whatsapp
                 </button>
                 
-            </div>
-            
             
         </div>
     </div>

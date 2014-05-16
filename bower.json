@@ -24,7 +24,10 @@
     "angular-carousel": "*",
     "angular-cookies": "~1.2.16",
     "angular-translate": "~2.1.0",
-    "angular-translate-loader-static-files": "~2.1.0"
+    "angular-translate-loader-static-files": "~2.1.0",
+    "angular-leaflet": "~0.7.5",
+    "leaflet-plugins": "~1.1.2",
+    "angularjs-geolocation": "~0.1.1"
   },
   "authors": [
     "Guillermo Ferrer <guilleferrer@gmail.com>"

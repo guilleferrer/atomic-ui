@@ -1,4 +1,4 @@
-angular.module('bootstrapDemoApp', ['ui.atomic', 'ngTouch' ,'ngMockE2E'],function ($httpProvider) {
+angular.module('bootstrapDemoApp', ['ui.atomic', 'ui.bootstrap', 'ngTouch' ,'ngMockE2E'],function ($httpProvider) {
     FastClick.attach(document.body);
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
 }).config(function ($translateProvider) {
