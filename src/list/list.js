@@ -8,8 +8,12 @@ angular.module('ui.atomic.list', ['ui.atomic.pager', 'ui.atomic.infinite-scroll'
             link: function (scope, element, attrs) {
                 scope.listClass = attrs.listClass || 'list-group';
                 scope.listCache = attrs.$attr.listNoCache ? false : true;
+                scope.loadOnSearchEvent = attrs.$attr.loadOnSearchEvent ? true : false;
                 var query = scope.$eval(attrs.apiQuery) || {};
-                scope.pager = new Pager(attrs.apiUrl, query);
+
+                if(!scope.loadOnSearchEvent){
+                    scope.pager = new Pager(attrs.apiUrl, query);
+                }
 
                 $rootScope.$on('searchEvent.SEARCH_CHANGE', function (event, value, params) {
                     angular.extend(query, params);
